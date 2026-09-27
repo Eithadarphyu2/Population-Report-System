@@ -1,0 +1,153 @@
+@startuml
+
+left to right direction
+
+actor User
+database "Population Database" as DB
+
+rectangle "Population Reporting System" {
+
+    usecase "Generate Country Report" as UC1
+    usecase "Generate City Report" as UC2
+    usecase "Generate Capital City Report" as UC3
+    usecase "Generate Population Distribution Report" as UC4
+    usecase "Generate Population Total Report" as UC5
+    usecase "Generate Language Population Report" as UC6
+
+    ' Country Reports
+    usecase "All Countries Worldwide" as R01
+    usecase "Countries by Continent" as R02
+    usecase "Countries by Region" as R03
+    usecase "Top N Countries Worldwide" as R04
+    usecase "Top N Countries by Continent" as R05
+    usecase "Top N Countries by Region" as R06
+
+    ' City Reports
+    usecase "All Cities Worldwide" as R07
+    usecase "Cities by Continent" as R08
+    usecase "Cities by Region" as R09
+    usecase "Cities by Country" as R10
+    usecase "Cities by District" as R11
+    usecase "Top N Cities Worldwide" as R12
+    usecase "Top N Cities by Continent" as R13
+    usecase "Top N Cities by Region" as R14
+    usecase "Top N Cities by Country" as R15
+    usecase "Top N Cities by District" as R16
+
+    ' Capital City Reports
+    usecase "All Capital Cities Worldwide" as R17
+    usecase "Capital Cities by Continent" as R18
+    usecase "Capital Cities by Region" as R19
+    usecase "Top N Capital Cities Worldwide" as R20
+    usecase "Top N Capital Cities by Continent" as R21
+    usecase "Top N Capital Cities by Region" as R22
+
+    ' Population Distribution Reports
+    usecase "Population Distribution by Continent" as R23
+    usecase "Population Distribution by Region" as R24
+    usecase "Population Distribution by Country" as R25
+
+    ' Population Total Reports
+    usecase "World Population" as R26
+    usecase "Continent Population" as R27
+    usecase "Region Population" as R28
+    usecase "Country Population" as R29
+    usecase "District Population" as R30
+    usecase "City Population" as R31
+
+    ' Language Report
+    usecase "Language Population Report" as R32
+}
+
+' User to main use cases
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+
+' Country Report group
+UC1 --> R01
+UC1 --> R02
+UC1 --> R03
+UC1 --> R04
+UC1 --> R05
+UC1 --> R06
+
+' City Report group
+UC2 --> R07
+UC2 --> R08
+UC2 --> R09
+UC2 --> R10
+UC2 --> R11
+UC2 --> R12
+UC2 --> R13
+UC2 --> R14
+UC2 --> R15
+UC2 --> R16
+
+' Capital City Report group
+UC3 --> R17
+UC3 --> R18
+UC3 --> R19
+UC3 --> R20
+UC3 --> R21
+UC3 --> R22
+
+' Population Distribution group
+UC4 --> R23
+UC4 --> R24
+UC4 --> R25
+
+' Population Total group
+UC5 --> R26
+UC5 --> R27
+UC5 --> R28
+UC5 --> R29
+UC5 --> R30
+UC5 --> R31
+
+' Language Report group
+UC6 --> R32
+
+' Reports to database
+R01 --> DB
+R02 --> DB
+R03 --> DB
+R04 --> DB
+R05 --> DB
+R06 --> DB
+
+R07 --> DB
+R08 --> DB
+R09 --> DB
+R10 --> DB
+R11 --> DB
+R12 --> DB
+R13 --> DB
+R14 --> DB
+R15 --> DB
+R16 --> DB
+
+R17 --> DB
+R18 --> DB
+R19 --> DB
+R20 --> DB
+R21 --> DB
+R22 --> DB
+
+R23 --> DB
+R24 --> DB
+R25 --> DB
+
+R26 --> DB
+R27 --> DB
+R28 --> DB
+R29 --> DB
+R30 --> DB
+R31 --> DB
+
+R32 --> DB
+
+@enduml
