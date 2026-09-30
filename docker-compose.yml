@@ -1,0 +1,62 @@
+services:
+
+  # MySQL database service
+  mysql:
+    image: mysql:8.0
+    container_name: population-report-mysql
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: world
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      # Automatically initialise the database from world.sql
+      - ./database/world.sql:/docker-entrypoint-initdb.d/world.sql:ro
+
+      # Persist MySQL data locally
+      - mysql_data:/var/lib/mysql
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-prootpassword"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # Java application service
+  app:
+    build: .
+
+    container_name: population-report-app
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: world
+      DB_USER: appuser
+      DB_PASSWORD: apppassword
+
+volumes:
+
+  # Named volume for MySQL data persistence
+  mysql_data:

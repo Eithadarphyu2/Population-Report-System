@@ -1,11 +1,11 @@
-# Base runtime image using Java 21 LTS / Java 26 compatible OpenJDK JRE
-FROM eclipse-temurin:21-jre-alpine
+# Java 26 runtime image
+FROM eclipse-temurin:26-jre
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app
 
-# Copy any generated JAR file from target folder to app.jar inside container
+# Copy the generated JAR into the container
 COPY target/*.jar app.jar
 
-# Entry point command to execute the application JAR
+# Start the application
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -1,64 +1,59 @@
-name: Java CI with Maven and Docker
+name: Java CI with Maven and Docker Compose
 
 on:
   push:
-    # Trigger CI on pushes to ALL branches
     branches:
       - '*'
+
   pull_request:
-    # Trigger CI on pull requests targeting master or develop
     branches:
-      - "master"
-      - "develop"
+      - master
+      - develop
 
 jobs:
+
   build-and-test:
+    name: Build, Test and Docker Compose
     runs-on: ubuntu-latest
 
-    services:
-      # MySQL 8.0 service container for running unit and integration tests
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: world
-          MYSQL_USER: appuser
-          MYSQL_PASSWORD: apppassword
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
-      # Step 1: Checkout repository source code
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      # Step 2: Set up Java Development Kit (JDK) 26
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      # Set up Java 26
       - name: Set up JDK 26
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '26'
           distribution: 'temurin'
           cache: maven
 
-      # Step 3: Compile project and run JUnit tests against MySQL container
-      - name: Build and Run Tests with Maven
+      # Build the application JAR without running tests
+      - name: Build application with Maven
+        run: mvn clean package -DskipTests
+
+      # Start MySQL and the application containers
+      - name: Start Docker Compose
+        run: docker compose up -d --build
+
+      # Run Maven integration tests
+      - name: Run integration tests
         env:
           DB_HOST: localhost
           DB_PORT: 3306
           DB_NAME: world
           DB_USER: appuser
           DB_PASSWORD: apppassword
-        run: mvn clean test
+        run: mvn test
 
-      # Step 4: Package application into an executable JAR file
-      - name: Package Application JAR
-        run: mvn package -DskipTests
+      # Show container logs if a step fails
+      - name: Show Docker logs
+        if: failure()
+        run: docker compose logs
 
-      # Step 5: Verify Dockerfile builds cleanly into a container image
-      - name: Build Docker Image
-        run: docker build -t population-report-system:latest .
+      # Stop containers and remove resources
+      - name: Clean up Docker Compose
+        if: always()
+        run: docker compose down -v
