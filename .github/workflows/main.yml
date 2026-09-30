@@ -2,9 +2,11 @@ name: Java CI with Maven and Docker
 
 on:
   push:
+    # Trigger CI on pushes to ALL branches
     branches:
       - '*'
   pull_request:
+    # Trigger CI on pull requests targeting master or develop
     branches:
       - "master"
       - "develop"
@@ -14,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      # MySQL service container for unit and integration testing
+      # MySQL 8.0 service container for running unit and integration tests
       mysql:
         image: mysql:8.0
         env:
@@ -31,41 +33,32 @@ jobs:
           --health-retries=5
 
     steps:
-      # Step 1: Checkout repository code
+      # Step 1: Checkout repository source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
       # Step 2: Set up Java Development Kit (JDK) 26
       - name: Set up JDK 26
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: '26'
           distribution: 'temurin'
+          cache: maven
 
-      # Step 3: Run Maven tests if pom.xml is present
+      # Step 3: Compile project and run JUnit tests against MySQL container
       - name: Build and Run Tests with Maven
-        run: |
-          if [ -f "pom.xml" ]; then
-            mvn clean test
-          else
-            echo "pom.xml not found on this branch. Skipping Maven build."
-          fi
         env:
           DB_HOST: localhost
           DB_PORT: 3306
           DB_NAME: world
           DB_USER: appuser
           DB_PASSWORD: apppassword
+        run: mvn clean test
 
-      # Step 4: Package JAR artifact
+      # Step 4: Package application into an executable JAR file
       - name: Package Application JAR
-        run: |
-          if [ -f "pom.xml" ]; then
-            mvn package -DskipTests
-          else
-            echo "pom.xml not found on this branch. Skipping packaging."
-          fi
+        run: mvn package -DskipTests
 
-      # Step 5: Build Docker container image
+      # Step 5: Verify Dockerfile builds cleanly into a container image
       - name: Build Docker Image
         run: docker build -t population-report-system:latest .
