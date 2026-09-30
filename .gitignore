@@ -1,0 +1,11 @@
+# Maven Output
+target/
+*.jar
+
+# IDE Configurations
+.idea/
+*.iml
+.DS_Store
+
+# Environment Variables & Secrets
+.env
