@@ -10,51 +10,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Core query execution utility for executing safe PreparedStatements.
+ * Utility class for executing parameterized database queries.
  */
 public final class DatabaseQuery {
 
     private DatabaseQuery() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+        throw new UnsupportedOperationException(
+                "Utility class cannot be instantiated"
+        );
     }
 
     /**
-     * Functional interface to map a row of ResultSet into a Java Object.
+     * Maps one ResultSet row to a Java object.
      */
     @FunctionalInterface
     public interface RowMapper<T> {
-        T mapRow(ResultSet rs) throws SQLException;
+
+        T mapRow(ResultSet resultSet) throws SQLException;
     }
 
     /**
-     * Executes a parameterized SELECT query safely and maps results using RowMapper.
-     *
-     * @param <T>    Target entity type
-     * @param sql    SQL query string with placeholders (?)
-     * @param mapper Mapping function for ResultSet
-     * @param params Parameter values to bind into SQL query
-     * @return List of mapped entity objects
-     * @throws SQLException if database access or query execution fails
+     * Executes a parameterized SELECT query and maps each result row.
      */
     public static <T> List<T> executeQuery(
             String sql,
             RowMapper<T> mapper,
-            Object... params) throws SQLException {
+            Object... params
+    ) throws SQLException {
 
         List<T> results = new ArrayList<>();
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection connection =
+                     DatabaseConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
 
             if (params != null) {
                 for (int i = 0; i < params.length; i++) {
-                    stmt.setObject(i + 1, params[i]);
+                    statement.setObject(i + 1, params[i]);
                 }
             }
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    results.add(mapper.mapRow(rs));
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
+
+                while (resultSet.next()) {
+                    results.add(mapper.mapRow(resultSet));
                 }
             }
         }

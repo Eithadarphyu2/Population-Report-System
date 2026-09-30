@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class DatabaseQueryTest {
 
     /**
-     * Simple class used only for testing DatabaseQuery.
+     * Simple result object used by the integration tests.
      */
     private record CountryResult(
             String code,
@@ -32,15 +32,16 @@ class DatabaseQueryTest {
                 LIMIT 5
                 """;
 
-        List<CountryResult> results = DatabaseQuery.executeQuery(
-                sql,
-                rs -> new CountryResult(
-                        rs.getString("Code"),
-                        rs.getString("Name"),
-                        rs.getString("Continent"),
-                        rs.getLong("Population")
-                )
-        );
+        List<CountryResult> results =
+                DatabaseQuery.executeQuery(
+                        sql,
+                        rs -> new CountryResult(
+                                rs.getString("Code"),
+                                rs.getString("Name"),
+                                rs.getString("Continent"),
+                                rs.getLong("Population")
+                        )
+                );
 
         assertNotNull(results);
         assertFalse(results.isEmpty());
@@ -59,17 +60,18 @@ class DatabaseQueryTest {
                 LIMIT ?
                 """;
 
-        List<CountryResult> results = DatabaseQuery.executeQuery(
-                sql,
-                rs -> new CountryResult(
-                        rs.getString("Code"),
-                        rs.getString("Name"),
-                        rs.getString("Continent"),
-                        rs.getLong("Population")
-                ),
-                "Asia",
-                5
-        );
+        List<CountryResult> results =
+                DatabaseQuery.executeQuery(
+                        sql,
+                        rs -> new CountryResult(
+                                rs.getString("Code"),
+                                rs.getString("Name"),
+                                rs.getString("Continent"),
+                                rs.getLong("Population")
+                        ),
+                        "Asia",
+                        5
+                );
 
         assertNotNull(results);
         assertFalse(results.isEmpty());
@@ -90,16 +92,17 @@ class DatabaseQueryTest {
                 WHERE Continent = ?
                 """;
 
-        List<CountryResult> results = DatabaseQuery.executeQuery(
-                sql,
-                rs -> new CountryResult(
-                        rs.getString("Code"),
-                        rs.getString("Name"),
-                        rs.getString("Continent"),
-                        rs.getLong("Population")
-                ),
-                "NonExistentContinent"
-        );
+        List<CountryResult> results =
+                DatabaseQuery.executeQuery(
+                        sql,
+                        rs -> new CountryResult(
+                                rs.getString("Code"),
+                                rs.getString("Name"),
+                                rs.getString("Continent"),
+                                rs.getLong("Population")
+                        ),
+                        "NonExistentContinent"
+                );
 
         assertNotNull(results);
         assertEquals(0, results.size());
