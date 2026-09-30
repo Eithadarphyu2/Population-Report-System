@@ -1,24 +1,28 @@
 services:
+  # MySQL 8.0 Database Container Service
   mysql:
     image: mysql:8.0
     container_name: population-report-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${DB_NAME:-world}
-      MYSQL_USER: ${DB_USER:-appuser}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-apppassword}
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: world
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
     ports:
       - "3306:3306"
     volumes:
+      # Automatically initializes the database schema and sample data on container startup
       - ./database/world.sql:/docker-entrypoint-initdb.d/world.sql:ro
+      # Persists MySQL database data on the host machine
       - mysql_data:/var/lib/mysql
 
+  # Main Application Service
   app:
     build: .
     container_name: population-report-app
     depends_on:
-      - mysql
+      - mysql # Ensures MySQL container starts before the application container
     environment:
       DB_HOST: mysql
       DB_PORT: "3306"
@@ -27,4 +31,4 @@ services:
       DB_PASSWORD: apppassword
 
 volumes:
-  mysql_data:
+  mysql_data: # Named volume for database persistence
