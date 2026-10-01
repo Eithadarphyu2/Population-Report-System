@@ -5,7 +5,7 @@ FROM eclipse-temurin:26-jre
 WORKDIR /app
 
 # Copy the generated JAR into the container
-COPY target/*.jar app.jar
+COPY target/*-jar-with-dependencies.jar app.jar
 
 # Start the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
