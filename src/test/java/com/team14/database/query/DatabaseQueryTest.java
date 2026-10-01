@@ -6,13 +6,15 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Tests for DatabaseQuery (needs the MySQL container).
+ */
 class DatabaseQueryTest {
 
     /**
-     * Simple result object used by the integration tests.
+     * Simple result object used by the tests.
      */
     private record CountryResult(
             String code,
@@ -22,29 +24,31 @@ class DatabaseQueryTest {
     ) {
     }
 
+    /**
+     * Maps one country row; shared so every test uses the same mapping.
+     */
+    private static final DatabaseQuery.RowMapper<CountryResult> COUNTRY_MAPPER =
+            rs -> new CountryResult(
+                    rs.getString("Code"),
+                    rs.getString("Name"),
+                    rs.getString("Continent"),
+                    rs.getLong("Population")
+            );
+
+    private static final String SELECT_COUNTRY = """
+            SELECT Code, Name, Continent, Population
+            FROM country
+            """;
+
     @Test
     @DisplayName("Execute a SELECT query and return results")
     void testExecuteQuery() throws Exception {
 
-        String sql = """
-                SELECT Code, Name, Continent, Population
-                FROM country
-                LIMIT 5
-                """;
+        List<CountryResult> results = DatabaseQuery.executeQuery(
+                SELECT_COUNTRY + "LIMIT 5",
+                COUNTRY_MAPPER
+        );
 
-        List<CountryResult> results =
-                DatabaseQuery.executeQuery(
-                        sql,
-                        rs -> new CountryResult(
-                                rs.getString("Code"),
-                                rs.getString("Name"),
-                                rs.getString("Continent"),
-                                rs.getLong("Population")
-                        )
-                );
-
-        assertNotNull(results);
-        assertFalse(results.isEmpty());
         assertEquals(5, results.size());
     }
 
@@ -52,29 +56,14 @@ class DatabaseQueryTest {
     @DisplayName("Execute a parameterized SELECT query")
     void testParameterizedQuery() throws Exception {
 
-        String sql = """
-                SELECT Code, Name, Continent, Population
-                FROM country
-                WHERE Continent = ?
-                ORDER BY Population DESC
-                LIMIT ?
-                """;
+        List<CountryResult> results = DatabaseQuery.executeQuery(
+                SELECT_COUNTRY
+                        + "WHERE Continent = ? ORDER BY Population DESC LIMIT ?",
+                COUNTRY_MAPPER,
+                "Asia",
+                5
+        );
 
-        List<CountryResult> results =
-                DatabaseQuery.executeQuery(
-                        sql,
-                        rs -> new CountryResult(
-                                rs.getString("Code"),
-                                rs.getString("Name"),
-                                rs.getString("Continent"),
-                                rs.getLong("Population")
-                        ),
-                        "Asia",
-                        5
-                );
-
-        assertNotNull(results);
-        assertFalse(results.isEmpty());
         assertEquals(5, results.size());
 
         for (CountryResult country : results) {
@@ -86,25 +75,12 @@ class DatabaseQueryTest {
     @DisplayName("Return an empty list when no records match")
     void testNoMatchingResults() throws Exception {
 
-        String sql = """
-                SELECT Code, Name, Continent, Population
-                FROM country
-                WHERE Continent = ?
-                """;
+        List<CountryResult> results = DatabaseQuery.executeQuery(
+                SELECT_COUNTRY + "WHERE Continent = ?",
+                COUNTRY_MAPPER,
+                "NonExistentContinent"
+        );
 
-        List<CountryResult> results =
-                DatabaseQuery.executeQuery(
-                        sql,
-                        rs -> new CountryResult(
-                                rs.getString("Code"),
-                                rs.getString("Name"),
-                                rs.getString("Continent"),
-                                rs.getLong("Population")
-                        ),
-                        "NonExistentContinent"
-                );
-
-        assertNotNull(results);
-        assertEquals(0, results.size());
+        assertTrue(results.isEmpty());
     }
 }
