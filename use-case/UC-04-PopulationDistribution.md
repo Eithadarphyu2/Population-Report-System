@@ -16,7 +16,7 @@ Primary task.
 
 ### Preconditions
 
-The population database is available and contains country, city population data.
+The population database is available and contains country and city population data.
 
 ### Success End Condition
 
