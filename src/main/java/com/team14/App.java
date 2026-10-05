@@ -7,6 +7,7 @@ import com.team14.report.country.AllCountriesInWorldReport;
 import com.team14.report.country.CountriesByContinentReport;
 import com.team14.report.country.CountriesByRegionReport;
 import com.team14.report.country.TopCountriesWorldwideReport;
+import com.team14.report.country.TopCountriesByContinentReport;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,7 +23,11 @@ public final class App {
             new CountriesByContinentReport(ReportParameters.CONTINENT),
             new TopCountriesWorldwideReport(ReportParameters.TOP_N),
             new AllCountriesInWorldReport(),
-            new CountriesByRegionReport(ReportParameters.REGION)
+            new CountriesByRegionReport(ReportParameters.REGION),
+            new TopCountriesByContinentReport(
+                    ReportParameters.CONTINENT,
+                    ReportParameters.TOP_N
+            )
     );
 
     private App() {
