@@ -1,7 +1,9 @@
 package com.team14;
 
+import com.team14.config.ReportParameters;
 import com.team14.database.DatabaseConnection;
 import com.team14.report.Report;
+import com.team14.report.country.TopCountriesWorldwideReport;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,8 +16,7 @@ public final class App {
 
     /** Every report in the system, in the order they are printed. */
     private static final List<Report> REPORTS = List.of(
-
-           //Add each report object here
+            new TopCountriesWorldwideReport(ReportParameters.TOP_N)
     );
 
     private App() {
@@ -26,8 +27,6 @@ public final class App {
 
     /**
      * Starts the application: checks the database, then prints all reports.
-     * A failing report is reported and skipped, so one broken report does
-     * not stop the others. The exit code is 1 if any report failed.
      *
      * @param args command line arguments (not used)
      */
@@ -47,11 +46,9 @@ public final class App {
         }
     }
 
-    /** Fails early with a clear message if the database cannot be reached. */
     private static void checkDatabaseConnection() throws SQLException {
 
         try (Connection connection = DatabaseConnection.getConnection()) {
-
             System.out.println(
                     "Population Report System started. Database connection OK: "
                             + connection.isValid(2)
@@ -59,11 +56,6 @@ public final class App {
         }
     }
 
-    /**
-     * Runs every registered report.
-     *
-     * @return the number of reports that failed
-     */
     private static int runAllReports() {
 
         int failures = 0;
