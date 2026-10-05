@@ -3,9 +3,7 @@ package com.team14;
 import com.team14.config.ReportParameters;
 import com.team14.database.DatabaseConnection;
 import com.team14.report.Report;
-import com.team14.report.country.AllCountriesInWorldReport;
 import com.team14.report.country.CountriesByContinentReport;
-import com.team14.report.country.CountriesByRegionReport;
 import com.team14.report.country.TopCountriesWorldwideReport;
 import com.team14.report.country.TopCountriesByContinentReport;
 
@@ -22,8 +20,6 @@ public final class App {
     private static final List<Report> REPORTS = List.of(
             new CountriesByContinentReport(ReportParameters.CONTINENT),
             new TopCountriesWorldwideReport(ReportParameters.TOP_N),
-            new AllCountriesInWorldReport(),
-            new CountriesByRegionReport(ReportParameters.REGION),
             new TopCountriesByContinentReport(
                     ReportParameters.CONTINENT,
                     ReportParameters.TOP_N
