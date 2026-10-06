@@ -1,5 +1,5 @@
-# Java 26 runtime image
-FROM eclipse-temurin:26-jre
+# Java 21 runtime image
+FROM eclipse-temurin:21-jre
 
 # Set the working directory
 WORKDIR /app
