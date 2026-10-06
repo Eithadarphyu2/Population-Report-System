@@ -34,7 +34,7 @@ jobs:
       - name: Build application with Maven
         run: mvn clean package -DskipTests
 
-     # Start MySQL and wait until the health check passes
+     # Start MySQL and wait until the mysql health check passes
       - name: Start Docker Compose
         run: |
           docker compose up -d --build
