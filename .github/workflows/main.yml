@@ -36,7 +36,13 @@ jobs:
 
      # Start MySQL and wait until the health check passes
       - name: Start Docker Compose
-        run: docker compose up -d --build --wait
+        run: |
+          docker compose up -d --build
+          echo "Waiting for MySQL to be ready..."
+          until docker exec population-report-mysql mysqladmin ping -h "127.0.0.1" -u root -prootpassword --silent; do
+            sleep 2
+          done
+          echo "MySQL is ready!"
 
       # Run Maven integration tests
       - name: Run integration tests
