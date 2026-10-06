@@ -8,6 +8,7 @@ import com.team14.report.country.CountriesByContinentReport;
 import com.team14.report.country.CountriesByRegionReport;
 import com.team14.report.country.TopCountriesWorldwideReport;
 import com.team14.report.country.TopCountriesByContinentReport;
+import com.team14.report.country.TopCountriesByRegionReport;
 
 
 import java.sql.Connection;
@@ -27,6 +28,10 @@ public final class App {
             new TopCountriesWorldwideReport(ReportParameters.TOP_N),
             new TopCountriesByContinentReport(
                     ReportParameters.CONTINENT,
+                    ReportParameters.TOP_N
+            ),
+            new TopCountriesByRegionReport(
+                    ReportParameters.REGION,
                     ReportParameters.TOP_N
             )
 
