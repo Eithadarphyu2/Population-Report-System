@@ -34,8 +34,6 @@ public final class App {
                     ReportParameters.REGION,
                     ReportParameters.TOP_N
             )
-
-
     );
 
     private App() {

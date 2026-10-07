@@ -7,11 +7,12 @@ import com.team14.report.ReportDisplay.Alignment;
 import com.team14.report.ReportDisplay.Column;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Base class for the country reports (requirements 1 to 6).
+ * Base class for the country reports.
  *
  * The common SELECT statement, country columns, database query execution,
  * result mapping and report display are handled here. Subclasses only
@@ -25,7 +26,7 @@ public abstract class CountryReport implements Report {
             new Column("Name", Alignment.LEFT),
             new Column("Continent", Alignment.LEFT),
             new Column("Region", Alignment.LEFT),
-            new Column("Population", Alignment.RIGHT),
+            Column.population(),
             new Column("Capital", Alignment.LEFT)
     );
 
@@ -39,12 +40,6 @@ public abstract class CountryReport implements Report {
 
     /**
      * Provides the report-specific SQL clauses.
-     *
-     * Examples:
-     * WHERE c.Continent = ? ORDER BY c.Population DESC
-     *
-     * or:
-     * ORDER BY c.Population DESC LIMIT ?
      *
      * @return SQL clauses appended to the common SELECT statement
      */
@@ -79,16 +74,13 @@ public abstract class CountryReport implements Report {
 
         List<List<?>> rows = DatabaseQuery.executeQuery(
                 SELECT_COUNTRY + reportClauses,
-                rs -> List.of(
+                rs -> Arrays.asList(
                         rs.getString("Code"),
                         rs.getString("Name"),
                         rs.getString("Continent"),
                         rs.getString("Region"),
                         rs.getLong("Population"),
-                        Objects.requireNonNullElse(
-                                rs.getString("Capital"),
-                                "N/A"
-                        )
+                        rs.getString("Capital")
                 ),
                 reportParameters
         );

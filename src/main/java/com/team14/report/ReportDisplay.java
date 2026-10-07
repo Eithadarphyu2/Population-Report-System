@@ -16,7 +16,6 @@ public final class ReportDisplay {
     private static final String COLUMN_SEPARATOR = "|";
     private static final String BORDER_CORNER = "+";
     private static final String BORDER_HORIZONTAL = "-";
-    private static final String EMPTY_VALUE = "N/A";
     private static final String TITLE_RULE = "=".repeat(60);
 
     private static final int MIN_COLUMN_WIDTH = 12;
@@ -43,14 +42,16 @@ public final class ReportDisplay {
     }
 
     /**
-     * Defines a report column and its alignment.
+     * Defines a report column, its alignment and how missing values are shown.
      *
-     * @param heading   column heading
-     * @param alignment column alignment
+     * @param heading       column heading
+     * @param alignment     column alignment
+     * @param zeroIsMissing true if the number 0 means "nothing recorded"
      */
     public record Column(
             String heading,
-            Alignment alignment) {
+            Alignment alignment,
+            boolean zeroIsMissing) {
 
         public Column {
             if (heading == null || heading.isBlank()) {
@@ -64,6 +65,35 @@ public final class ReportDisplay {
                         "Column alignment cannot be null."
                 );
             }
+        }
+
+        /**
+         * Creates a column where 0 is a real value.
+         *
+         * @param heading   column heading
+         * @param alignment column alignment
+         */
+        public Column(String heading, Alignment alignment) {
+            this(heading, alignment, false);
+        }
+
+        /**
+         * Creates the standard Population column, where 0 means that no
+         * population is recorded.
+         *
+         * @return the Population column
+         */
+        public static Column population() {
+            return new Column("Population", Alignment.RIGHT, true);
+        }
+
+        /**
+         * Gets the text shown when a value is missing.
+         *
+         * @return the missing-value text for this column
+         */
+        String missingText() {
+            return "No " + heading.toLowerCase(Locale.ROOT) + " recorded";
         }
     }
 
@@ -98,7 +128,7 @@ public final class ReportDisplay {
 
         validateReport(title, columns, rows);
 
-        List<List<String>> formattedRows = formatRows(rows);
+        List<List<String>> formattedRows = formatRows(rows, columns);
 
         int[] columnWidths = calculateColumnWidths(
                 columns,
@@ -133,11 +163,13 @@ public final class ReportDisplay {
     /**
      * Converts report values into display-ready strings.
      *
-     * @param rows report rows
+     * @param rows    report rows
+     * @param columns report columns
      * @return formatted rows
      */
     private static List<List<String>> formatRows(
-            List<List<?>> rows) {
+            List<List<?>> rows,
+            List<Column> columns) {
 
         List<List<String>> formattedRows = new ArrayList<>();
 
@@ -145,8 +177,8 @@ public final class ReportDisplay {
 
             List<String> formattedRow = new ArrayList<>();
 
-            for (Object value : row) {
-                formattedRow.add(formatValue(value));
+            for (int i = 0; i < row.size(); i++) {
+                formattedRow.add(formatValue(row.get(i), columns.get(i)));
             }
 
             formattedRows.add(formattedRow);
@@ -157,16 +189,17 @@ public final class ReportDisplay {
 
     /**
      * Formats an individual report value.
-     *
+     * Missing values are replaced by the column's missing-value text.
      * Numeric values receive thousands separators.
      *
-     * @param value value to format
+     * @param value  value to format
+     * @param column column the value belongs to
      * @return formatted value
      */
-    private static String formatValue(Object value) {
+    private static String formatValue(Object value, Column column) {
 
-        if (value == null) {
-            return EMPTY_VALUE;
+        if (isMissing(value, column)) {
+            return column.missingText();
         }
 
         if (value instanceof Number number) {
@@ -174,6 +207,28 @@ public final class ReportDisplay {
         }
 
         return value.toString();
+    }
+
+    /**
+     * Checks whether a value should be shown as "not recorded".
+     *
+     * @param value  value to check
+     * @param column column the value belongs to
+     * @return true if the value is null, blank, or 0 in a zero-is-missing column
+     */
+    private static boolean isMissing(Object value, Column column) {
+
+        if (value == null) {
+            return true;
+        }
+
+        if (value instanceof String text) {
+            return text.isBlank();
+        }
+
+        return column.zeroIsMissing()
+                && value instanceof Number number
+                && number.doubleValue() == 0;
     }
 
     /**
