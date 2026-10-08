@@ -3,6 +3,7 @@ package com.team14;
 import com.team14.config.ReportParameters;
 import com.team14.database.DatabaseConnection;
 import com.team14.report.Report;
+import com.team14.report.city.AllCitiesInWorldReport;
 import com.team14.report.country.AllCountriesInWorldReport;
 import com.team14.report.country.CountriesByContinentReport;
 import com.team14.report.country.CountriesByRegionReport;
@@ -35,6 +36,7 @@ public final class App {
                     ReportParameters.REGION,
                     ReportParameters.TOP_N
             ),
+            new AllCitiesInWorldReport(),
             new TopCitiesByWorldwideReport(ReportParameters.TOP_N),
             new TopCitiesByContinentReport(
                     ReportParameters.CONTINENT,
