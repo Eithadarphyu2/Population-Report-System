@@ -9,6 +9,7 @@ import com.team14.report.country.CountriesByRegionReport;
 import com.team14.report.country.TopCountriesWorldwideReport;
 import com.team14.report.country.TopCountriesByContinentReport;
 import com.team14.report.country.TopCountriesByRegionReport;
+import com.team14.report.city.CitiesByContinentReport;
 import com.team14.report.city.TopCitiesByWorldwideReport;
 import com.team14.report.city.TopCitiesByContinentReport;
 
@@ -39,7 +40,8 @@ public final class App {
             new TopCitiesByContinentReport(
                     ReportParameters.CONTINENT,
                     ReportParameters.TOP_N
-            )
+            ),
+            new CitiesByContinentReport(ReportParameters.CONTINENT)
     );
 
     private App() {
