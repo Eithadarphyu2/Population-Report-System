@@ -15,7 +15,8 @@ import com.team14.report.city.CitiesByRegionReport;
 import com.team14.report.city.TopCitiesByWorldwideReport;
 import com.team14.report.city.TopCitiesByContinentReport;
 import com.team14.report.city.TopCitiesByDistrictReport;
-
+import com.team14.report.city.TopCitiesByCountryReport;
+import com.team14.report.city.TopCitiesByRegionReport;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -50,6 +51,14 @@ public final class App {
             ),
             new TopCitiesByDistrictReport(
                     ReportParameters.DISTRICT,
+                    ReportParameters.TOP_N
+            ),
+            new TopCitiesByCountryReport(
+                    ReportParameters.COUNTRY,
+                    ReportParameters.TOP_N
+            ),
+            new TopCitiesByRegionReport(
+                    ReportParameters.REGION,
                     ReportParameters.TOP_N
             )
     );
