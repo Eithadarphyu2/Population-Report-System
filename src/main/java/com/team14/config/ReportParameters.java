@@ -15,7 +15,7 @@ public final class ReportParameters {
     public static final String CONTINENT = "Europe";
 
     /** Region used by the region reports. */
-    public static final String REGION = "British Islands";
+    public static final String REGION = "Southern Europe";
 
     /** Country used by the country reports. */
     public static final String COUNTRY = "United Kingdom";

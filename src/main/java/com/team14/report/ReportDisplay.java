@@ -18,6 +18,12 @@ public final class ReportDisplay {
     private static final String BORDER_HORIZONTAL = "-";
     private static final String TITLE_RULE = "=".repeat(60);
 
+    /**
+     * Dash characters (hyphen, en dash, em dash) that the database uses as a
+     * placeholder when a value is unknown.
+     */
+    private static final String PLACEHOLDER_DASHES = "-\u2013\u2014";
+
     private static final int MIN_COLUMN_WIDTH = 12;
     private static final int CELL_PADDING = 1;
 
@@ -189,6 +195,7 @@ public final class ReportDisplay {
 
     /**
      * Formats an individual report value.
+     *
      * Missing values are replaced by the column's missing-value text.
      * Numeric values receive thousands separators.
      *
@@ -214,7 +221,8 @@ public final class ReportDisplay {
      *
      * @param value  value to check
      * @param column column the value belongs to
-     * @return true if the value is null, blank, or 0 in a zero-is-missing column
+     * @return true if the value is null, a text with no real content, or 0 in
+     *         a zero-is-missing column
      */
     private static boolean isMissing(Object value, Column column) {
 
@@ -223,12 +231,24 @@ public final class ReportDisplay {
         }
 
         if (value instanceof String text) {
-            return text.isBlank();
+            return hasNoContent(text);
         }
 
         return column.zeroIsMissing()
                 && value instanceof Number number
                 && number.doubleValue() == 0;
+    }
+
+    /**
+     * Checks whether a text has no real content, meaning it is empty or made
+     * only of spaces and placeholder dashes such as "-".
+     *
+     * @param text text to check
+     * @return true if the text carries no information
+     */
+    private static boolean hasNoContent(String text) {
+        return text.chars().allMatch(c ->
+                Character.isWhitespace(c) || PLACEHOLDER_DASHES.indexOf(c) >= 0);
     }
 
     /**
