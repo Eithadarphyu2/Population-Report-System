@@ -51,7 +51,7 @@ public final class App {
                     ReportParameters.TOP_N
             ),
             new CitiesByCountryReport(ReportParameters.COUNTRY),
-            new CitiesByDistrictReport(ReportParameters.DISTRICT)
+            new CitiesByDistrictReport(ReportParameters.DISTRICT),
             new TopCitiesByDistrictReport(
                     ReportParameters.DISTRICT,
                     ReportParameters.TOP_N
