@@ -13,6 +13,7 @@ import com.team14.report.city.CitiesByContinentReport;
 import com.team14.report.city.CitiesByRegionReport;
 import com.team14.report.city.TopCitiesByWorldwideReport;
 import com.team14.report.city.TopCitiesByContinentReport;
+import com.team14.report.city.TopCitiesByDistrictReport;
 
 
 import java.sql.Connection;
@@ -43,6 +44,10 @@ public final class App {
             new TopCitiesByWorldwideReport(ReportParameters.TOP_N),
             new TopCitiesByContinentReport(
                     ReportParameters.CONTINENT,
+                    ReportParameters.TOP_N
+            ),
+            new TopCitiesByDistrictReport(
+                    ReportParameters.DISTRICT,
                     ReportParameters.TOP_N
             )
     );
