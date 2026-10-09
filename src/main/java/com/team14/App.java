@@ -9,8 +9,11 @@ import com.team14.report.country.CountriesByRegionReport;
 import com.team14.report.country.TopCountriesWorldwideReport;
 import com.team14.report.country.TopCountriesByContinentReport;
 import com.team14.report.country.TopCountriesByRegionReport;
+import com.team14.report.city.CitiesByContinentReport;
+import com.team14.report.city.CitiesByRegionReport;
 import com.team14.report.city.TopCitiesByWorldwideReport;
 import com.team14.report.city.TopCitiesByContinentReport;
+
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,6 +38,8 @@ public final class App {
                     ReportParameters.REGION,
                     ReportParameters.TOP_N
             ),
+            new CitiesByContinentReport(ReportParameters.CONTINENT),
+            new CitiesByRegionReport(ReportParameters.REGION),
             new TopCitiesByWorldwideReport(ReportParameters.TOP_N),
             new TopCitiesByContinentReport(
                     ReportParameters.CONTINENT,
