@@ -1,24 +1,22 @@
 package com.team14.report.country;
 
-import com.team14.database.query.DatabaseQuery;
-import com.team14.report.Report;
-import com.team14.report.ReportDisplay;
 import com.team14.report.ReportDisplay.Alignment;
 import com.team14.report.ReportDisplay.Column;
+import com.team14.report.SqlReport;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Base class for the country reports.
  *
- * The common SELECT statement, country columns, database query execution,
- * result mapping and report display are handled here. Subclasses only
- * define the report-specific SQL clauses and parameters.
+ * It provides the country SELECT, columns and row reading. Query execution
+ * and display are done by SqlReport. Subclasses only define the
+ * report-specific SQL clauses and parameters.
  */
-public abstract class CountryReport implements Report {
+public abstract class CountryReport extends SqlReport {
 
     /** Columns required by all country reports. */
     private static final List<Column> COLUMNS = List.of(
@@ -38,57 +36,25 @@ public abstract class CountryReport implements Report {
             LEFT JOIN city ci ON c.Capital = ci.ID
             """;
 
-    /**
-     * Provides the report-specific SQL clauses.
-     *
-     * @return SQL clauses appended to the common SELECT statement
-     */
-    protected abstract String clauses();
-
-    /**
-     * Provides values for the placeholders in the SQL clauses.
-     *
-     * @return parameter values in the same order as the SQL placeholders
-     */
-    protected Object[] parameters() {
-        return new Object[0];
+    @Override
+    protected String select() {
+        return SELECT_COUNTRY;
     }
 
-    /**
-     * Executes the country report and displays the results.
-     *
-     * @throws SQLException if the database query fails
-     */
     @Override
-    public final void run() throws SQLException {
+    protected List<Column> columns() {
+        return COLUMNS;
+    }
 
-        String reportClauses = Objects.requireNonNull(
-                clauses(),
-                "Report SQL clauses cannot be null."
-        );
-
-        Object[] reportParameters = Objects.requireNonNullElse(
-                parameters(),
-                new Object[0]
-        );
-
-        List<List<?>> rows = DatabaseQuery.executeQuery(
-                SELECT_COUNTRY + reportClauses,
-                rs -> Arrays.asList(
-                        rs.getString("Code"),
-                        rs.getString("Name"),
-                        rs.getString("Continent"),
-                        rs.getString("Region"),
-                        rs.getLong("Population"),
-                        rs.getString("Capital")
-                ),
-                reportParameters
-        );
-
-        ReportDisplay.displayReport(
-                title(),
-                COLUMNS,
-                rows
+    @Override
+    protected List<?> readRow(ResultSet rs) throws SQLException {
+        return Arrays.asList(
+                rs.getString("Code"),
+                rs.getString("Name"),
+                rs.getString("Continent"),
+                rs.getString("Region"),
+                rs.getLong("Population"),
+                rs.getString("Capital")
         );
     }
 }

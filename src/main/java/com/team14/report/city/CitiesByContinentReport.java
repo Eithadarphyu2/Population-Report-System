@@ -1,6 +1,7 @@
 package com.team14.report.city;
 
-import java.util.Objects;
+import com.team14.input.UserInput;
+import com.team14.report.Validation;
 
 /**
  * Requirement 8: all cities in a specified continent organised by
@@ -11,24 +12,21 @@ public final class CitiesByContinentReport extends CityReport {
     private final String continent;
 
     /**
-     * Creates a cities-by-continent report.
+     * Creates a cities-by-continent report using user input.
+     *
+     * @param userInput source used to obtain the continent
+     */
+    public CitiesByContinentReport(UserInput userInput) {
+        this(Validation.requireInput(userInput).getContinent());
+    }
+
+    /**
+     * Creates a cities-by-continent report with a specified continent.
      *
      * @param continent the continent to search
      */
     public CitiesByContinentReport(String continent) {
-
-        Objects.requireNonNull(
-                continent,
-                "Continent cannot be null."
-        );
-
-        if (continent.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Continent cannot be empty."
-            );
-        }
-
-        this.continent = continent.trim();
+        this.continent = Validation.requireText(continent, "Continent");
     }
 
     @Override

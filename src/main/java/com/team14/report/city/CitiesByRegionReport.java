@@ -1,8 +1,7 @@
 package com.team14.report.city;
 
 import com.team14.input.UserInput;
-
-import java.util.Objects;
+import com.team14.report.Validation;
 
 /**
  * Generates a report showing all cities in a selected region,
@@ -20,10 +19,7 @@ public final class CitiesByRegionReport extends CityReport {
      * @param userInput source used to obtain the region
      */
     public CitiesByRegionReport(UserInput userInput) {
-        this(Objects.requireNonNull(
-                userInput,
-                "User input cannot be null."
-        ).getRegion());
+        this(Validation.requireInput(userInput).getRegion());
     }
 
     /**
@@ -34,13 +30,7 @@ public final class CitiesByRegionReport extends CityReport {
      * @param region region to display
      */
     public CitiesByRegionReport(String region) {
-        if (region == null || region.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Region cannot be empty."
-            );
-        }
-
-        this.region = region.trim();
+        this.region = Validation.requireText(region, "Region");
     }
 
     @Override
