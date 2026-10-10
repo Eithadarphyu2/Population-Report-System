@@ -1,8 +1,7 @@
 package com.team14.report.city;
 
 import com.team14.input.UserInput;
-
-import java.util.Objects;
+import com.team14.report.Validation;
 
 /**
  * Generates a report showing the top N most populated cities
@@ -21,13 +20,8 @@ public final class TopCitiesByRegionReport extends CityReport {
      * @param userInput source used to obtain the region and N
      */
     public TopCitiesByRegionReport(UserInput userInput) {
-        Objects.requireNonNull(
-                userInput,
-                "User input cannot be null."
-        );
-
-        this.region = userInput.getRegion();
-        this.topN = userInput.getTopN();
+        this(Validation.requireInput(userInput).getRegion(),
+                userInput.getTopN());
     }
 
     /**
@@ -40,20 +34,8 @@ public final class TopCitiesByRegionReport extends CityReport {
             String region,
             int topN) {
 
-        if (region == null || region.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Region cannot be empty."
-            );
-        }
-
-        if (topN <= 0) {
-            throw new IllegalArgumentException(
-                    "Number of cities must be greater than 0."
-            );
-        }
-
-        this.region = region;
-        this.topN = topN;
+        this.region = Validation.requireText(region, "Region");
+        this.topN = Validation.requirePositive(topN, "Number of cities");
     }
 
     @Override
