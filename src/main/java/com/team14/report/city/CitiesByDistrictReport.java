@@ -1,8 +1,7 @@
 package com.team14.report.city;
 
 import com.team14.input.UserInput;
-
-import java.util.Objects;
+import com.team14.report.Validation;
 
 /**
  * Generates a report showing all cities in a selected district,
@@ -12,16 +11,22 @@ public final class CitiesByDistrictReport extends CityReport {
 
     private final String district;
 
+    /**
+     * Creates a cities-by-district report using user input.
+     *
+     * @param userInput source used to obtain the district
+     */
     public CitiesByDistrictReport(UserInput userInput) {
-        Objects.requireNonNull(userInput, "User input cannot be null.");
-        this.district = userInput.getDistrict();
+        this(Validation.requireInput(userInput).getDistrict());
     }
 
+    /**
+     * Creates a cities-by-district report with a specified district.
+     *
+     * @param district district to display
+     */
     public CitiesByDistrictReport(String district) {
-        if (district == null || district.isBlank()) {
-            throw new IllegalArgumentException("District cannot be empty.");
-        }
-        this.district = district;
+        this.district = Validation.requireText(district, "District");
     }
 
     @Override
