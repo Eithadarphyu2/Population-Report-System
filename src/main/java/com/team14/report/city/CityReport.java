@@ -7,6 +7,7 @@ import com.team14.report.ReportDisplay.Alignment;
 import com.team14.report.ReportDisplay.Column;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +25,7 @@ public abstract class CityReport implements Report {
             new Column("Name", Alignment.LEFT),
             new Column("Country", Alignment.LEFT),
             new Column("District", Alignment.LEFT),
-            new Column("Population", Alignment.RIGHT)
+            Column.population()
     );
 
     /** Common SQL used by every city report. */
@@ -77,7 +78,7 @@ public abstract class CityReport implements Report {
 
         List<List<?>> rows = DatabaseQuery.executeQuery(
                 SELECT_CITY + reportClauses,
-                rs -> List.of(
+                rs -> Arrays.asList(
                         rs.getString("Name"),
                         rs.getString("Country"),
                         rs.getString("District"),
