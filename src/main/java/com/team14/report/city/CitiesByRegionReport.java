@@ -1,7 +1,7 @@
 package com.team14.report.city;
 
 import com.team14.input.UserInput;
-import com.team14.report.Report;
+import com.team14.report.Validation;
 
 /**
  * Generates a report showing all cities in a selected region,
@@ -19,7 +19,7 @@ public final class CitiesByRegionReport extends CityReport {
      * @param userInput source used to obtain the region
      */
     public CitiesByRegionReport(UserInput userInput) {
-        this(Report.requireInput(userInput).getRegion());
+        this(Validation.requireInput(userInput).getRegion());
     }
 
     /**
@@ -30,7 +30,7 @@ public final class CitiesByRegionReport extends CityReport {
      * @param region region to display
      */
     public CitiesByRegionReport(String region) {
-        this.region = Report.requireText(region, "Region");
+        this.region = Validation.requireText(region, "Region");
     }
 
     @Override

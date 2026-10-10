@@ -1,7 +1,7 @@
 package com.team14.report.city;
 
 import com.team14.input.UserInput;
-import com.team14.report.Report;
+import com.team14.report.Validation;
 
 /**
  * Requirement 8: all cities in a specified continent organised by
@@ -17,7 +17,7 @@ public final class CitiesByContinentReport extends CityReport {
      * @param userInput source used to obtain the continent
      */
     public CitiesByContinentReport(UserInput userInput) {
-        this(Report.requireInput(userInput).getContinent());
+        this(Validation.requireInput(userInput).getContinent());
     }
 
     /**
@@ -26,7 +26,7 @@ public final class CitiesByContinentReport extends CityReport {
      * @param continent the continent to search
      */
     public CitiesByContinentReport(String continent) {
-        this.continent = Report.requireText(continent, "Continent");
+        this.continent = Validation.requireText(continent, "Continent");
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.team14.report.country;
 
 import com.team14.input.UserInput;
-import com.team14.report.Report;
+import com.team14.report.Validation;
 
 /**
  * Requirement 3: all countries in a specified region organised by
@@ -17,7 +17,7 @@ public final class CountriesByRegionReport extends CountryReport {
      * @param userInput source used to obtain the region
      */
     public CountriesByRegionReport(UserInput userInput) {
-        this(Report.requireInput(userInput).getRegion());
+        this(Validation.requireInput(userInput).getRegion());
     }
 
     /**
@@ -26,7 +26,7 @@ public final class CountriesByRegionReport extends CountryReport {
      * @param region the region to search
      */
     public CountriesByRegionReport(String region) {
-        this.region = Report.requireText(region, "Region");
+        this.region = Validation.requireText(region, "Region");
     }
 
     @Override
