@@ -7,7 +7,7 @@ public final class AllCitiesInWorldReport extends CityReport {
 
     @Override
     public String title() {
-        return "All cities in the world by population";
+        return "All Cities in the World by Population";
     }
 
     @Override

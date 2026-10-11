@@ -31,13 +31,11 @@ public class UserInput {
                     return choice;
                 }
 
-                System.out.println(
-                        "Please enter a valid number.");
+                System.out.println("Please enter a valid number.");
 
             } catch (NumberFormatException e) {
 
-                System.out.println(
-                        "Invalid input. Please enter a number.");
+                System.out.println("Invalid input. Please enter a number.");
             }
         }
     }
@@ -63,13 +61,11 @@ public class UserInput {
                     return number;
                 }
 
-                System.out.println(
-                        "Please enter a number greater than 0.");
+                System.out.println("Please enter a number greater than 0.");
 
             } catch (NumberFormatException e) {
 
-                System.out.println(
-                        "Invalid number. Please try again.");
+                System.out.println("Invalid number. Please try again.");
             }
         }
     }
@@ -91,8 +87,7 @@ public class UserInput {
                 return input;
             }
 
-            System.out.println(
-                    "Input cannot be empty. Please try again.");
+            System.out.println("Input cannot be empty. Please try again.");
         }
     }
 
@@ -128,7 +123,6 @@ public class UserInput {
 
     public int getTopN() {
 
-        return getPositiveNumber(
-                "Enter number of results (N): ");
+        return getPositiveNumber("Enter number of results (N): ");
     }
 }

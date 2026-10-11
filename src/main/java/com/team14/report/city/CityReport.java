@@ -11,7 +11,6 @@ import java.util.List;
 
 /**
  * Base class for the city reports.
- *
  * It provides the city SELECT, columns and row reading. Query execution
  * and display are done by SqlReport. Subclasses only define the
  * report-specific SQL clauses and parameters.

@@ -21,8 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ReportDisplayMissingValueTest {
 
-    private static final Column DISTRICT =
-            new Column("District", Alignment.LEFT);
+    private static final Column DISTRICT = new Column("District", Alignment.LEFT);
 
     private final PrintStream originalOut = System.out;
     private final ByteArrayOutputStream captured = new ByteArrayOutputStream();
@@ -43,27 +42,17 @@ class ReportDisplayMissingValueTest {
     private String render(Column column, Object value) {
         captured.reset();
 
-        ReportDisplay.displayReport(
-                "Test",
-                List.of(column),
-                List.of(Arrays.asList(value))
-        );
+        ReportDisplay.displayReport("Test", List.of(column), List.of(Arrays.asList(value)));
 
         return captured.toString();
     }
 
     private void assertShows(Column column, Object value, String expected) {
-        assertTrue(
-                render(column, value).contains(expected),
-                "Expected '" + expected + "' for value: " + value
-        );
+        assertTrue(render(column, value).contains(expected), "Expected '" + expected + "' for value: " + value);
     }
 
     private void assertDoesNotShow(Column column, Object value, String text) {
-        assertFalse(
-                render(column, value).contains(text),
-                "Did not expect '" + text + "' for value: " + value
-        );
+        assertFalse(render(column, value).contains(text), "Did not expect '" + text + "' for value: " + value);
     }
 
     @Test
@@ -105,10 +94,6 @@ class ReportDisplayMissingValueTest {
     @Test
     @DisplayName("0 stays 0 in a column that is not a population column")
     void zeroIsKeptInOtherColumns() {
-        assertDoesNotShow(
-                new Column("Percentage", Alignment.RIGHT),
-                0L,
-                "No percentage recorded"
-        );
+        assertDoesNotShow(new Column("Percentage", Alignment.RIGHT), 0L, "No percentage recorded");
     }
 }

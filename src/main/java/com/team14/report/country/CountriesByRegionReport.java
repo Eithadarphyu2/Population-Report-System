@@ -4,7 +4,7 @@ import com.team14.input.UserInput;
 import com.team14.report.Validation;
 
 /**
- * Requirement 3: all countries in a specified region organised by
+ * Requirement 3: all countries in a specified region organized by
  * largest population to smallest.
  */
 public final class CountriesByRegionReport extends CountryReport {
@@ -31,7 +31,7 @@ public final class CountriesByRegionReport extends CountryReport {
 
     @Override
     public String title() {
-        return "Countries in " + region + " by population";
+        return "Countries in " + region + " by Population";
     }
 
     @Override

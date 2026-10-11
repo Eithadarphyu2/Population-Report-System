@@ -6,7 +6,7 @@ import com.team14.report.Validation;
 /**
  * Generates a report showing all cities in a selected region,
  * ordered by population from highest to lowest.
- *
+ * <p>
  * This report implements City Report requirement 9.
  */
 public final class CitiesByRegionReport extends CityReport {
@@ -24,7 +24,7 @@ public final class CitiesByRegionReport extends CityReport {
 
     /**
      * Creates a cities-by-region report with a specified region.
-     *
+     * <p>
      * This constructor is useful for testing and non-interactive runs.
      *
      * @param region region to display

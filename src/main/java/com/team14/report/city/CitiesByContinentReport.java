@@ -4,7 +4,7 @@ import com.team14.input.UserInput;
 import com.team14.report.Validation;
 
 /**
- * Requirement 8: all cities in a specified continent organised by
+ * Requirement 8: all cities in a specified continent organized by
  * largest population to smallest.
  */
 public final class CitiesByContinentReport extends CityReport {
@@ -31,7 +31,7 @@ public final class CitiesByContinentReport extends CityReport {
 
     @Override
     public String title() {
-        return "Cities in " + continent + " by population";
+        return "Cities in " + continent + " by Population";
     }
 
     @Override

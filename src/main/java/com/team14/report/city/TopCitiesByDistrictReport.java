@@ -6,7 +6,7 @@ import com.team14.report.Validation;
 /**
  * Generates a report showing the top N most populated cities
  * in a selected district.
- *
+ * <p>
  * This report implements City Report requirement 11.
  */
 public final class TopCitiesByDistrictReport extends CityReport {
@@ -20,21 +20,18 @@ public final class TopCitiesByDistrictReport extends CityReport {
      * @param userInput source used to obtain the district and N
      */
     public TopCitiesByDistrictReport(UserInput userInput) {
-        this(Validation.requireInput(userInput).getDistrict(),
-                userInput.getTopN());
+        this(Validation.requireInput(userInput).getDistrict(), userInput.getTopN());
     }
 
     /**
      * Creates a report with a specified district and number of cities.
-     *
+     * <p>
      * This constructor is useful for testing and application configuration.
      *
      * @param district district to display
-     * @param topN number of cities to display
+     * @param topN     number of cities to display
      */
-    public TopCitiesByDistrictReport(
-            String district,
-            int topN) {
+    public TopCitiesByDistrictReport(String district, int topN) {
 
         this.district = Validation.requireText(district, "District");
         this.topN = Validation.requirePositive(topN, "Number of cities");
@@ -42,9 +39,7 @@ public final class TopCitiesByDistrictReport extends CityReport {
 
     @Override
     public String title() {
-        return "Top " + topN
-                + " Populated Cities in "
-                + district;
+        return "Top " + topN + " Populated Cities in " + district;
     }
 
     @Override
@@ -58,9 +53,6 @@ public final class TopCitiesByDistrictReport extends CityReport {
 
     @Override
     protected Object[] parameters() {
-        return new Object[]{
-                district,
-                topN
-        };
+        return new Object[]{district, topN};
     }
 }
