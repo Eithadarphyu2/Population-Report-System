@@ -6,7 +6,7 @@ import com.team14.report.Validation;
 /**
  * Generates a report showing the top N most populated cities
  * within a specified continent.
- *
+ * <p>
  * This report implements the Top N Cities by Continent requirement.
  */
 public final class TopCitiesByContinentReport extends CityReport {
@@ -20,15 +20,14 @@ public final class TopCitiesByContinentReport extends CityReport {
      * @param userInput source used to obtain the continent and N
      */
     public TopCitiesByContinentReport(UserInput userInput) {
-        this(Validation.requireInput(userInput).getContinent(),
-                userInput.getTopN());
+        this(Validation.requireInput(userInput).getContinent(), userInput.getTopN());
     }
 
     /**
      * Creates a top-N city report for a specified continent.
      *
      * @param continent continent to report on
-     * @param topN number of cities to display
+     * @param topN      number of cities to display
      */
     public TopCitiesByContinentReport(String continent, int topN) {
         this.continent = Validation.requireText(continent, "Continent");

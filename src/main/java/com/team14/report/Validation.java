@@ -10,9 +10,7 @@ import java.util.Objects;
 public final class Validation {
 
     private Validation() {
-        throw new UnsupportedOperationException(
-                "Utility class cannot be instantiated"
-        );
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     /**
@@ -24,9 +22,7 @@ public final class Validation {
      */
     public static String requireText(String value, String fieldName) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(
-                    fieldName + " cannot be empty."
-            );
+            throw new IllegalArgumentException(fieldName + " cannot be empty.");
         }
         return value.trim();
     }
@@ -40,9 +36,7 @@ public final class Validation {
      */
     public static int requirePositive(int value, String fieldName) {
         if (value <= 0) {
-            throw new IllegalArgumentException(
-                    fieldName + " must be greater than 0."
-            );
+            throw new IllegalArgumentException(fieldName + " must be greater than 0.");
         }
         return value;
     }
@@ -54,9 +48,6 @@ public final class Validation {
      * @return the same user input source
      */
     public static UserInput requireInput(UserInput userInput) {
-        return Objects.requireNonNull(
-                userInput,
-                "User input cannot be null."
-        );
+        return Objects.requireNonNull(userInput, "User input cannot be null.");
     }
 }

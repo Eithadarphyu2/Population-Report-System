@@ -6,7 +6,7 @@ import com.team14.report.Validation;
 /**
  * Generates a report showing the top N most populated cities
  * in a selected region.
- *
+ * <p>
  * This report implements the City Report requirement.
  */
 public final class TopCitiesByRegionReport extends CityReport {
@@ -20,19 +20,16 @@ public final class TopCitiesByRegionReport extends CityReport {
      * @param userInput source used to obtain the region and N
      */
     public TopCitiesByRegionReport(UserInput userInput) {
-        this(Validation.requireInput(userInput).getRegion(),
-                userInput.getTopN());
+        this(Validation.requireInput(userInput).getRegion(), userInput.getTopN());
     }
 
     /**
      * Creates a report with a specified region and number of cities.
      *
      * @param region region to display
-     * @param topN number of cities to display
+     * @param topN   number of cities to display
      */
-    public TopCitiesByRegionReport(
-            String region,
-            int topN) {
+    public TopCitiesByRegionReport(String region, int topN) {
 
         this.region = Validation.requireText(region, "Region");
         this.topN = Validation.requirePositive(topN, "Number of cities");
@@ -40,9 +37,7 @@ public final class TopCitiesByRegionReport extends CityReport {
 
     @Override
     public String title() {
-        return "Top " + topN
-                + " Populated Cities in "
-                + region;
+        return "Top " + topN + " Populated Cities in " + region;
     }
 
     @Override
@@ -56,9 +51,6 @@ public final class TopCitiesByRegionReport extends CityReport {
 
     @Override
     protected Object[] parameters() {
-        return new Object[]{
-                region,
-                topN
-        };
+        return new Object[]{region, topN};
     }
 }

@@ -5,7 +5,7 @@ import com.team14.report.Validation;
 
 /**
  * Generates a report showing the top N most populated countries worldwide.
- *
+ * <p>
  * This report implements Country Report requirement 4.
  */
 public final class TopCountriesWorldwideReport extends CountryReport {
@@ -23,7 +23,7 @@ public final class TopCountriesWorldwideReport extends CountryReport {
 
     /**
      * Creates a top-N worldwide country report with a specified value.
-     *
+     * <p>
      * This constructor is useful for testing.
      *
      * @param topN number of countries to display

@@ -44,6 +44,6 @@ public final class CitiesByDistrictReport extends CityReport {
 
     @Override
     protected Object[] parameters() {
-        return new Object[]{ district };
+        return new Object[]{district};
     }
 }

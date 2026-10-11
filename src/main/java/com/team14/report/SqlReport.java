@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Base class for every report that runs one SQL query and prints a table.
- *
+ * <p>
  * The shared steps (build the query, run it, read each row, display the
  * table) are done once here in run(). Subclasses only provide their own
  * SELECT, columns, row reading and report-specific SQL clauses.
@@ -64,26 +64,12 @@ public abstract class SqlReport implements Report {
     @Override
     public final void run() throws SQLException {
 
-        String reportClauses = Objects.requireNonNull(
-                clauses(),
-                "Report SQL clauses cannot be null."
-        );
+        String reportClauses = Objects.requireNonNull(clauses(), "Report SQL clauses cannot be null.");
 
-        Object[] reportParameters = Objects.requireNonNullElse(
-                parameters(),
-                new Object[0]
-        );
+        Object[] reportParameters = Objects.requireNonNullElse(parameters(), new Object[0]);
 
-        List<List<?>> rows = DatabaseQuery.executeQuery(
-                select() + reportClauses,
-                rs -> readRow(rs),
-                reportParameters
-        );
+        List<List<?>> rows = DatabaseQuery.executeQuery(select() + reportClauses, rs -> readRow(rs), reportParameters);
 
-        ReportDisplay.displayReport(
-                title(),
-                columns(),
-                rows
-        );
+        ReportDisplay.displayReport(title(), columns(), rows);
     }
 }

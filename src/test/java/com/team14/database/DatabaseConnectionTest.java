@@ -27,8 +27,7 @@ class DatabaseConnectionTest {
             assertTrue(connection.isValid(2), "Database connection should be active.");
 
             DatabaseMetaData metaData = connection.getMetaData();
-            assertNotNull(metaData.getDatabaseProductName(),
-                    "Database product name should be readable.");
+            assertNotNull(metaData.getDatabaseProductName(), "Database product name should be readable.");
         }
     }
 }
