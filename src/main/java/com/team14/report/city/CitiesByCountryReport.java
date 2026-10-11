@@ -1,8 +1,7 @@
 package com.team14.report.city;
 
 import com.team14.input.UserInput;
-
-import java.util.Objects;
+import com.team14.report.Validation;
 
 /**
  * Generates a report showing all cities in a selected country,
@@ -12,16 +11,22 @@ public final class CitiesByCountryReport extends CityReport {
 
     private final String country;
 
+    /**
+     * Creates a cities-by-country report using user input.
+     *
+     * @param userInput source used to obtain the country
+     */
     public CitiesByCountryReport(UserInput userInput) {
-        Objects.requireNonNull(userInput, "User input cannot be null.");
-        this.country = userInput.getCountry();
+        this(Validation.requireInput(userInput).getCountry());
     }
 
+    /**
+     * Creates a cities-by-country report with a specified country.
+     *
+     * @param country country name or code to display
+     */
     public CitiesByCountryReport(String country) {
-        if (country == null || country.isBlank()) {
-            throw new IllegalArgumentException("Country cannot be empty.");
-        }
-        this.country = country;
+        this.country = Validation.requireText(country, "Country");
     }
 
     @Override
