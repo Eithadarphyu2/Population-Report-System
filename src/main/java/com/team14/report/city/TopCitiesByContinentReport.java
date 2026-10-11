@@ -1,5 +1,8 @@
 package com.team14.report.city;
 
+import com.team14.input.UserInput;
+import com.team14.report.Validation;
+
 /**
  * Generates a report showing the top N most populated cities
  * within a specified continent.
@@ -12,27 +15,24 @@ public final class TopCitiesByContinentReport extends CityReport {
     private final int topN;
 
     /**
+     * Creates a report using user input.
+     *
+     * @param userInput source used to obtain the continent and N
+     */
+    public TopCitiesByContinentReport(UserInput userInput) {
+        this(Validation.requireInput(userInput).getContinent(),
+                userInput.getTopN());
+    }
+
+    /**
      * Creates a top-N city report for a specified continent.
      *
      * @param continent continent to report on
      * @param topN number of cities to display
      */
     public TopCitiesByContinentReport(String continent, int topN) {
-
-        if (continent == null || continent.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Continent cannot be null or blank."
-            );
-        }
-
-        if (topN <= 0) {
-            throw new IllegalArgumentException(
-                    "Number of cities must be greater than 0."
-            );
-        }
-
-        this.continent = continent;
-        this.topN = topN;
+        this.continent = Validation.requireText(continent, "Continent");
+        this.topN = Validation.requirePositive(topN, "Number of cities");
     }
 
     @Override
