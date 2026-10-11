@@ -46,26 +46,25 @@ public final class App {
             new AllCitiesInWorldReport(),
             new CitiesByContinentReport(ReportParameters.CONTINENT),
             new CitiesByRegionReport(ReportParameters.REGION),
+            new CitiesByCountryReport(ReportParameters.COUNTRY),
+            new CitiesByDistrictReport(ReportParameters.DISTRICT),
             new TopCitiesByWorldwideReport(ReportParameters.TOP_N),
             new TopCitiesByContinentReport(
                     ReportParameters.CONTINENT,
-                    ReportParameters.TOP_N
-            ),
-            new TopCitiesByDistrictReport(
-                    ReportParameters.DISTRICT,
-                    ReportParameters.TOP_N
-            ),
-            new TopCitiesByCountryReport(
-                    ReportParameters.COUNTRY,
                     ReportParameters.TOP_N
             ),
             new TopCitiesByRegionReport(
                     ReportParameters.REGION,
                     ReportParameters.TOP_N
             ),
-            new CitiesByCountryReport(ReportParameters.COUNTRY),
-            new CitiesByDistrictReport(ReportParameters.DISTRICT)
-
+            new TopCitiesByCountryReport(
+                    ReportParameters.COUNTRY,
+                    ReportParameters.TOP_N
+            ),
+            new TopCitiesByDistrictReport(
+                    ReportParameters.DISTRICT,
+                    ReportParameters.TOP_N
+            )
     );
 
     private App() {
