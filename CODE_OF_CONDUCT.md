@@ -448,15 +448,13 @@ with the module teaching team.
 
 ## 10.11 Contribution Record
 
-The team should maintain a contribution record containing, where
-appropriate:
+The team should maintain a contribution record containing, where appropriate, the date, member, issue or task, supporting evidence, fine level, deduction, and corrective action.
 
 | Date | Member | Issue/Task | Evidence | Fine Level | Deduction | Corrective Action |
 |---|---|---|---|---|---:|---|
-| | | | | | | |
+| 4.10.2026 | Pai Thant Htoo | Used a different branch from the agreed GitFlow branch for the feature | Relevant GitHub branch, commit history, and team discussion | Level 2 – Moderate | −0.3 points | Discuss the branching issue with the team and follow the agreed GitFlow branching structure for future contributions |
 
-The record should be factual and should not contain insulting,
-discriminatory, or personal comments.
+The record should be factual and should not contain insulting, discriminatory, or personal comments. Any deduction must follow the procedure in Section 10.4, including reviewing the evidence, giving the member an opportunity to explain the situation, and agreeing on a proportionate response. The member may request a review under Section 10.6.
 
 ---
 
