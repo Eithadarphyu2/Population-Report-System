@@ -73,7 +73,7 @@ The use-case diagram illustrates the main interactions between users and the Pop
 
 ## Individual Contribution Spreadsheet
 
-The following table records individual contributions through two code reviews. The team must agree on the scores before the final submission.
+The following table records individual contributions and the team agree on the scores before the submission.
 
 | Matriculation Number | Code Review 1 | Code Review 2 |
 |---|---:|---:|
@@ -84,5 +84,3 @@ The following table records individual contributions through two code reviews. T
 | 40840491 | 16.73 | — |
 | 40840485 | 16.73 | — |
 | **Total** | **100** | **—** |
-
-**Note:** Code review scores and totals will be completed after the team agrees on the final scores.
