@@ -76,13 +76,13 @@ The use-case diagram illustrates the main interactions between users and the Pop
 The following table records individual contributions through two code reviews. The team must agree on the scores before the final submission.
 
 | Matriculation Number | Code Review 1 | Code Review 2 |
-|---|---|---|
-| 40840502 | | |
-| 40840476 | | |
-| 40841070 | | |
-| 40841070 | | |
-| 40840491 | | |
-| 40840485 | | |
-| **Total** | | |
+|---|---:|---:|
+| 40840502 | 16.73 | — |
+| 40840476 | 16.73 | — |
+| 40841070 | 16.37 | — |
+| 40841079 | 16.73 | — |
+| 40840491 | 16.73 | — |
+| 40840485 | 16.73 | — |
+| **Total** | **100** | **—** |
 
 **Note:** Code review scores and totals will be completed after the team agrees on the final scores.
