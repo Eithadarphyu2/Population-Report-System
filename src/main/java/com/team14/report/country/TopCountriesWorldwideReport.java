@@ -1,12 +1,11 @@
 package com.team14.report.country;
 
 import com.team14.input.UserInput;
-
-import java.util.Objects;
+import com.team14.report.Validation;
 
 /**
  * Generates a report showing the top N most populated countries worldwide.
- *
+ * <p>
  * This report implements Country Report requirement 4.
  */
 public final class TopCountriesWorldwideReport extends CountryReport {
@@ -18,27 +17,19 @@ public final class TopCountriesWorldwideReport extends CountryReport {
      *
      * @param userInput source used to obtain the number of countries
      */
-
-//    public TopCountriesWorldwideReport(UserInput userInput) {
-//        Objects.requireNonNull(userInput, "User input cannot be null.");
-//        this.topN = userInput.getTopN();
-//    }
+    public TopCountriesWorldwideReport(UserInput userInput) {
+        this(Validation.requireInput(userInput).getTopN());
+    }
 
     /**
      * Creates a top-N worldwide country report with a specified value.
-     *
+     * <p>
      * This constructor is useful for testing.
      *
      * @param topN number of countries to display
      */
     public TopCountriesWorldwideReport(int topN) {
-        if (topN <= 0) {
-            throw new IllegalArgumentException(
-                    "Number of countries must be greater than 0."
-            );
-        }
-
-        this.topN = topN;
+        this.topN = Validation.requirePositive(topN, "Number of countries");
     }
 
     @Override

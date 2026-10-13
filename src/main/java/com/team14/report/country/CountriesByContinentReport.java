@@ -1,13 +1,12 @@
 package com.team14.report.country;
 
 import com.team14.input.UserInput;
-
-import java.util.Objects;
+import com.team14.report.Validation;
 
 /**
  * Generates a report showing all countries in a selected continent,
  * ordered by population from highest to lowest.
- *
+ * <p>
  * This report implements Country Report requirement 2.
  */
 public final class CountriesByContinentReport extends CountryReport {
@@ -20,35 +19,23 @@ public final class CountriesByContinentReport extends CountryReport {
      * @param userInput source used to obtain the continent
      */
     public CountriesByContinentReport(UserInput userInput) {
-        Objects.requireNonNull(
-                userInput,
-                "User input cannot be null."
-        );
-
-        this.continent = userInput.getContinent();
+        this(Validation.requireInput(userInput).getContinent());
     }
 
     /**
      * Creates a country-by-continent report with a specified continent.
-     *
+     * <p>
      * This constructor is useful for testing.
      *
      * @param continent continent to display
      */
     public CountriesByContinentReport(String continent) {
-        if (continent == null || continent.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Continent cannot be empty."
-            );
-        }
-
-        this.continent = continent;
+        this.continent = Validation.requireText(continent, "Continent");
     }
 
     @Override
     public String title() {
-        return "Countries in " + continent
-                + " by Population";
+        return "Countries in " + continent + " by Population";
     }
 
     @Override

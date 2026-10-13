@@ -1,4 +1,4 @@
-         # USE CASE: UC-05 Generate Population Total Report
+# USE CASE: UC-05 Generate Population Total Report
 
 ## CHARACTERISTIC INFORMATION
 
