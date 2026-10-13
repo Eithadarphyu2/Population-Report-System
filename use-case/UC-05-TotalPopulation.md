@@ -4,7 +4,7 @@
 
 ### Goal in Context
 
-As a user, I want to generate population total reports so that I can view the total population of the world, a continent, a region, a country, a district, or a city.
+As a report analyst, I want to generate population total reports so that I can view the total population of the world, a continent, a region, a country, a district, or a city.
 
 ### Scope
 
