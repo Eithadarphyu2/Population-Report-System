@@ -15,9 +15,7 @@ import java.util.List;
 public final class DatabaseQuery {
 
     private DatabaseQuery() {
-        throw new UnsupportedOperationException(
-                "Utility class cannot be instantiated"
-        );
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     /**
@@ -32,18 +30,11 @@ public final class DatabaseQuery {
     /**
      * Executes a parameterized SELECT query and maps each result row.
      */
-    public static <T> List<T> executeQuery(
-            String sql,
-            RowMapper<T> mapper,
-            Object... params
-    ) throws SQLException {
+    public static <T> List<T> executeQuery(String sql, RowMapper<T> mapper, Object... params) throws SQLException {
 
         List<T> results = new ArrayList<>();
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
 
             if (params != null) {
                 for (int i = 0; i < params.length; i++) {
@@ -51,8 +42,7 @@ public final class DatabaseQuery {
                 }
             }
 
-            try (ResultSet resultSet =
-                         statement.executeQuery()) {
+            try (ResultSet resultSet = statement.executeQuery()) {
 
                 while (resultSet.next()) {
                     results.add(mapper.mapRow(resultSet));

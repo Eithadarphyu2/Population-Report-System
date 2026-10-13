@@ -7,7 +7,7 @@ import java.util.Locale;
 
 /**
  * Provides a consistent console display format for all population reports.
- *
+ * <p>
  * This class is responsible only for formatting and displaying report data.
  * It does not contain database access, SQL queries, or report calculations.
  */
@@ -18,27 +18,29 @@ public final class ReportDisplay {
     private static final String BORDER_HORIZONTAL = "-";
     private static final String TITLE_RULE = "=".repeat(60);
 
+    /**
+     * Dash characters (hyphen, en dash, em dash) that the database uses as a
+     * placeholder when a value is unknown.
+     */
+    private static final String PLACEHOLDER_DASHES = "-\u2013\u2014";
+
     private static final int MIN_COLUMN_WIDTH = 12;
     private static final int CELL_PADDING = 1;
 
-    private static final NumberFormat INTEGER_FORMAT =
-            NumberFormat.getIntegerInstance(Locale.US);
+    private static final NumberFormat INTEGER_FORMAT = NumberFormat.getIntegerInstance(Locale.US);
 
     /**
      * Prevents instantiation of this utility class.
      */
     private ReportDisplay() {
-        throw new UnsupportedOperationException(
-                "Utility class cannot be instantiated"
-        );
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     /**
      * Defines how a value is aligned within a report column.
      */
     public enum Alignment {
-        LEFT,
-        RIGHT
+        LEFT, RIGHT
     }
 
     /**
@@ -48,22 +50,15 @@ public final class ReportDisplay {
      * @param alignment     column alignment
      * @param zeroIsMissing true if the number 0 means "nothing recorded"
      */
-    public record Column(
-            String heading,
-            Alignment alignment,
-            boolean zeroIsMissing) {
+    public record Column(String heading, Alignment alignment, boolean zeroIsMissing) {
 
         public Column {
             if (heading == null || heading.isBlank()) {
-                throw new IllegalArgumentException(
-                        "Column heading cannot be empty."
-                );
+                throw new IllegalArgumentException("Column heading cannot be empty.");
             }
 
             if (alignment == null) {
-                throw new IllegalArgumentException(
-                        "Column alignment cannot be null."
-                );
+                throw new IllegalArgumentException("Column alignment cannot be null.");
             }
         }
 
@@ -99,21 +94,21 @@ public final class ReportDisplay {
 
     /**
      * Displays any supported population report.
-     *
+     * <p>
      * The method is shared by all report types:
-     *
+     * <p>
      * Country:
      * Code | Name | Continent | Region | Population | Capital
-     *
+     * <p>
      * City:
      * Name | Country | District | Population
-     *
+     * <p>
      * Capital City:
      * Name | Country | Population
-     *
+     * <p>
      * Population:
      * Location | Total Population | City Population | Non-City Population
-     *
+     * <p>
      * The City Population and Non-City Population values should contain
      * both the population number and its percentage.
      *
@@ -121,29 +116,19 @@ public final class ReportDisplay {
      * @param columns report column definitions
      * @param rows    report data
      */
-    public static void displayReport(
-            String title,
-            List<Column> columns,
-            List<List<?>> rows) {
+    public static void displayReport(String title, List<Column> columns, List<List<?>> rows) {
 
         validateReport(title, columns, rows);
 
         List<List<String>> formattedRows = formatRows(rows, columns);
 
-        int[] columnWidths = calculateColumnWidths(
-                columns,
-                formattedRows
-        );
+        int[] columnWidths = calculateColumnWidths(columns, formattedRows);
 
         printTitle(title);
 
         printSeparator(columnWidths);
 
-        printRow(
-                getHeadings(columns),
-                columnWidths,
-                columns
-        );
+        printRow(getHeadings(columns), columnWidths, columns);
 
         printSeparator(columnWidths);
 
@@ -153,9 +138,7 @@ public final class ReportDisplay {
 
         printSeparator(columnWidths);
 
-        System.out.println(
-                "Total records: " + formattedRows.size()
-        );
+        System.out.println("Total records: " + formattedRows.size());
 
         System.out.println();
     }
@@ -167,9 +150,7 @@ public final class ReportDisplay {
      * @param columns report columns
      * @return formatted rows
      */
-    private static List<List<String>> formatRows(
-            List<List<?>> rows,
-            List<Column> columns) {
+    private static List<List<String>> formatRows(List<List<?>> rows, List<Column> columns) {
 
         List<List<String>> formattedRows = new ArrayList<>();
 
@@ -189,6 +170,7 @@ public final class ReportDisplay {
 
     /**
      * Formats an individual report value.
+     * <p>
      * Missing values are replaced by the column's missing-value text.
      * Numeric values receive thousands separators.
      *
@@ -214,7 +196,8 @@ public final class ReportDisplay {
      *
      * @param value  value to check
      * @param column column the value belongs to
-     * @return true if the value is null, blank, or 0 in a zero-is-missing column
+     * @return true if the value is null, a text with no real content, or 0 in
+     * a zero-is-missing column
      */
     private static boolean isMissing(Object value, Column column) {
 
@@ -223,17 +206,26 @@ public final class ReportDisplay {
         }
 
         if (value instanceof String text) {
-            return text.isBlank();
+            return hasNoContent(text);
         }
 
-        return column.zeroIsMissing()
-                && value instanceof Number number
-                && number.doubleValue() == 0;
+        return column.zeroIsMissing() && value instanceof Number number && number.doubleValue() == 0;
+    }
+
+    /**
+     * Checks whether a text has no real content, meaning it is empty or made
+     * only of spaces and placeholder dashes such as "-".
+     *
+     * @param text text to check
+     * @return true if the text carries no information
+     */
+    private static boolean hasNoContent(String text) {
+        return text.chars().allMatch(c -> Character.isWhitespace(c) || PLACEHOLDER_DASHES.indexOf(c) >= 0);
     }
 
     /**
      * Formats numeric values for readable output.
-     *
+     * <p>
      * Whole numbers are displayed with thousands separators.
      * Decimal values are displayed with two decimal places.
      *
@@ -242,14 +234,9 @@ public final class ReportDisplay {
      */
     private static String formatNumber(Number number) {
 
-        if (number instanceof Double
-                || number instanceof Float) {
+        if (number instanceof Double || number instanceof Float) {
 
-            return String.format(
-                    Locale.US,
-                    "%,.2f",
-                    number.doubleValue()
-            );
+            return String.format(Locale.US, "%,.2f", number.doubleValue());
         }
 
         return INTEGER_FORMAT.format(number.longValue());
@@ -261,12 +248,9 @@ public final class ReportDisplay {
      * @param columns report columns
      * @return column headings
      */
-    private static List<String> getHeadings(
-            List<Column> columns) {
+    private static List<String> getHeadings(List<Column> columns) {
 
-        return columns.stream()
-                .map(Column::heading)
-                .toList();
+        return columns.stream().map(Column::heading).toList();
     }
 
     /**
@@ -276,30 +260,20 @@ public final class ReportDisplay {
      * @param formattedRows formatted report rows
      * @return column widths
      */
-    private static int[] calculateColumnWidths(
-            List<Column> columns,
-            List<List<String>> formattedRows) {
+    private static int[] calculateColumnWidths(List<Column> columns, List<List<String>> formattedRows) {
 
         int[] widths = new int[columns.size()];
 
         for (int i = 0; i < columns.size(); i++) {
 
-            widths[i] = Math.max(
-                    MIN_COLUMN_WIDTH,
-                    columns.get(i).heading().length()
-            );
+            widths[i] = Math.max(MIN_COLUMN_WIDTH, columns.get(i).heading().length());
         }
 
         for (List<String> row : formattedRows) {
 
-            for (int i = 0;
-                 i < row.size() && i < widths.length;
-                 i++) {
+            for (int i = 0; i < row.size() && i < widths.length; i++) {
 
-                widths[i] = Math.max(
-                        widths[i],
-                        row.get(i).length()
-                );
+                widths[i] = Math.max(widths[i], row.get(i).length());
             }
         }
 
@@ -332,11 +306,7 @@ public final class ReportDisplay {
 
         for (int width : widths) {
 
-            separator.append(
-                    BORDER_HORIZONTAL.repeat(
-                            width + (CELL_PADDING * 2)
-                    )
-            );
+            separator.append(BORDER_HORIZONTAL.repeat(width + (CELL_PADDING * 2)));
 
             separator.append(BORDER_CORNER);
         }
@@ -351,10 +321,7 @@ public final class ReportDisplay {
      * @param widths  column widths
      * @param columns column definitions
      */
-    private static void printRow(
-            List<String> row,
-            int[] widths,
-            List<Column> columns) {
+    private static void printRow(List<String> row, int[] widths, List<Column> columns) {
 
         StringBuilder output = new StringBuilder();
 
@@ -371,18 +338,9 @@ public final class ReportDisplay {
             output.append(" ");
 
             // "-" flag left-aligns; no flag right-aligns.
-            String alignFlag =
-                    columns.get(i).alignment() == Alignment.RIGHT
-                            ? ""
-                            : "-";
+            String alignFlag = columns.get(i).alignment() == Alignment.RIGHT ? "" : "-";
 
-            output.append(
-                    String.format(
-                            Locale.US,
-                            "%" + alignFlag + widths[i] + "s",
-                            value
-                    )
-            );
+            output.append(String.format(Locale.US, "%" + alignFlag + widths[i] + "s", value));
 
             output.append(" ");
             output.append(COLUMN_SEPARATOR);
@@ -398,43 +356,28 @@ public final class ReportDisplay {
      * @param columns report columns
      * @param rows    report rows
      */
-    private static void validateReport(
-            String title,
-            List<Column> columns,
-            List<List<?>> rows) {
+    private static void validateReport(String title, List<Column> columns, List<List<?>> rows) {
 
         if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Report title cannot be empty."
-            );
+            throw new IllegalArgumentException("Report title cannot be empty.");
         }
 
         if (columns == null || columns.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Report must contain at least one column."
-            );
+            throw new IllegalArgumentException("Report must contain at least one column.");
         }
 
         if (rows == null) {
-            throw new IllegalArgumentException(
-                    "Report rows cannot be null."
-            );
+            throw new IllegalArgumentException("Report rows cannot be null.");
         }
 
         for (List<?> row : rows) {
 
             if (row == null) {
-                throw new IllegalArgumentException(
-                        "Report row cannot be null."
-                );
+                throw new IllegalArgumentException("Report row cannot be null.");
             }
 
             if (row.size() != columns.size()) {
-                throw new IllegalArgumentException(
-                        "Every report row must contain exactly "
-                                + columns.size()
-                                + " values."
-                );
+                throw new IllegalArgumentException("Every report row must contain exactly " + columns.size() + " values.");
             }
         }
     }

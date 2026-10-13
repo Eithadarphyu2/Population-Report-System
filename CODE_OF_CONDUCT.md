@@ -343,19 +343,27 @@ The team uses four internal fine levels.
 
 | Level | Description | Example | Internal Deduction / Fine |
 |---|---|---|---|
-| **Level 1 – Minor** | A small failure to follow an agreed team rule | Late response, minor missed update, or small task delay without communication | **Buy/bring coffee for the team** |
-| **Level 2 – Moderate** | A repeated or more significant failure to meet an agreed responsibility | Repeatedly missing agreed meetings, failing to update assigned work, or leaving a task incomplete without communication | **−0.3 point** |
-| **Level 3 – Serious** | A significant failure that affects other team members or project progress | Repeatedly failing to contribute, abandoning assigned work, or repeatedly ignoring agreed responsibilities | **−0.5 point** |
-| **Level 4 – Major** | Serious misconduct or deliberate harmful behaviour | Deliberately damaging project resources, deliberately misrepresenting contribution, or intentionally taking another member's work as their own | **−1 point** |
+| **Level 1 – Minor** | A small failure to follow an agreed team rule | Late response, minor missed update, or small task delay without communication | Buy/bring coffee for the team |
+| **Level 2 – Moderate** | A repeated or more significant failure to meet an agreed responsibility | Repeatedly missing agreed meetings, failing to update assigned work, or leaving a task incomplete without communication | −0.3 point |
+| **Level 3 – Serious** | A significant failure that affects other team members or project progress | Repeatedly failing to contribute, abandoning assigned work, or repeatedly ignoring agreed responsibilities | −0.5 point |
+| **Level 4 – Major** | Serious misconduct or deliberate harmful behaviour | Deliberately damaging project resources, deliberately misrepresenting contribution, or intentionally taking another member's work as their own | −1 point |
 
-The deduction should be proportionate to the behaviour.
+## 10.3 Redistribution of Deducted Marks
 
-The team should not apply a higher-level deduction when a lower-level
-response is appropriate.
+- If marks are deducted from a team member, the deducted amount may be redistributed among other team members who have made meaningful contributions to the project.
+- Redistribution is not automatic. The team must discuss and agree on how the marks should be allocated.
+- Any increase must be supported by evidence of individual contributions, such as completed tasks, GitHub commits, pull requests, testing, documentation, and code reviews.
+- Marks should be distributed fairly and proportionately according to each member's contribution, rather than equally by default.
+- The total contribution percentage for each code review must remain exactly 100%.
+- The contribution record must document the original deduction, any redistribution, the reason for the decision, and the members affected.
+- No member should receive additional marks solely because another member's marks were deducted.
+
+The deduction and redistribution process must be fair, transparent,
+consistent, and based on the team's agreed assessment criteria.
 
 ---
 
-## 10.3 Corrective Action
+## 10.4 Corrective Action
 
 A fine should not be the only response.
 
@@ -376,7 +384,7 @@ and help the project continue successfully.
 
 ---
 
-## 10.4 Procedure Before Applying a Deduction
+## 10.5 Procedure Before Applying a Deduction
 
 A contribution deduction should follow this process:
 
@@ -411,7 +419,7 @@ The member completes the agreed corrective action where applicable.
 
 ---
 
-## 10.5 Exceptional Circumstances
+## 10.6 Exceptional Circumstances
 
 A member should not automatically receive a deduction when circumstances
 outside their reasonable control prevent them from completing work.
@@ -428,7 +436,7 @@ The team should consider the circumstances before applying any deduction.
 
 ---
 
-## 10.6 Review and Appeal
+## 10.7 Review and Appeal
 
 A member may request a review if they believe a deduction is incorrect,
 unfair, or based on incomplete information.
@@ -446,17 +454,15 @@ with the module teaching team.
 
 ---
 
-## 10.11 Contribution Record
+## 10.8 Contribution Record
 
-The team should maintain a contribution record containing, where
-appropriate:
+The team should maintain a contribution record containing, where appropriate, the date, member, issue or task, supporting evidence, fine level, deduction, and corrective action.
 
 | Date | Member | Issue/Task | Evidence | Fine Level | Deduction | Corrective Action |
 |---|---|---|---|---|---:|---|
-| | | | | | | |
+| 4.10.2026 | Pai Thant Htoo | Used a different branch from the agreed GitFlow branch for the feature | Relevant GitHub branch, commit history, and team discussion | Level 2 – Moderate | −0.3 points | Discuss the branching issue with the team and follow the agreed GitFlow branching structure for future contributions |
 
-The record should be factual and should not contain insulting,
-discriminatory, or personal comments.
+The record should be factual and should not contain insulting, discriminatory, or personal comments. Any deduction must follow the procedure in Section 10.4, including reviewing the evidence, giving the member an opportunity to explain the situation, and agreeing on a proportionate response. The member may request a review under Section 10.6.
 
 ---
 

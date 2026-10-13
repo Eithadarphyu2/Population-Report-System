@@ -4,7 +4,7 @@
 
 ### Goal in Context
 
-As a user, I want to generate city population reports so that I can view and compare city population information.
+As a report analyst, I want to generate city population reports so that I can view and compare city population information.
 
 ### Scope
 

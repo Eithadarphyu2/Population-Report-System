@@ -4,7 +4,7 @@
 
 ### Goal in Context
 
-As a user, I want to generate country population reports so that I can view and compare country population information.
+As a report analyst, I want to generate country population reports so that I can view and compare country population information.
 
 ### Scope
 
@@ -50,8 +50,6 @@ The user requests a country population report.
 6. The system orders the countries by population from largest to smallest.
 7. The system displays the country report.
 8. The report shows the country code, name, continent, region, population, and capital.
-
-## EXTENSIONS
 
 ## EXTENSIONS
 

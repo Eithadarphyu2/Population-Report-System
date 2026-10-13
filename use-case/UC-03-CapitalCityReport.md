@@ -4,7 +4,7 @@
 
 ### Goal in Context
 
-As a user, I want to generate capital city population reports so that I can view and compare the populations of capital cities.
+As a report analyst, I want to generate capital city population reports so that I can view and compare the populations of capital cities.
 
 ### Scope
 
@@ -78,4 +78,4 @@ The user may request:
 
 ## SCHEDULE
 
-**DUE DATE**: Release 2.0
+**DUE DATE**: Release 3.0

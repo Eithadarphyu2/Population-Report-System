@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ReportDisplayMissingValueTest {
 
+    private static final Column DISTRICT = new Column("District", Alignment.LEFT);
+
     private final PrintStream originalOut = System.out;
     private final ByteArrayOutputStream captured = new ByteArrayOutputStream();
 
@@ -34,61 +36,64 @@ class ReportDisplayMissingValueTest {
         System.setOut(originalOut);
     }
 
-    private String display(List<Column> columns, List<?> row) {
-        ReportDisplay.displayReport("Test", columns, List.of(row));
+    /**
+     * Displays a one-column, one-row report and returns what was printed.
+     */
+    private String render(Column column, Object value) {
+        captured.reset();
+
+        ReportDisplay.displayReport("Test", List.of(column), List.of(Arrays.asList(value)));
+
         return captured.toString();
     }
 
+    private void assertShows(Column column, Object value, String expected) {
+        assertTrue(render(column, value).contains(expected), "Expected '" + expected + "' for value: " + value);
+    }
+
+    private void assertDoesNotShow(Column column, Object value, String text) {
+        assertFalse(render(column, value).contains(text), "Did not expect '" + text + "' for value: " + value);
+    }
+
     @Test
-    @DisplayName("A null or blank text value shows 'No [heading] recorded'")
+    @DisplayName("A null or blank text shows 'No [heading] recorded'")
     void missingTextIsDescribed() {
+        assertShows(DISTRICT, null, "No district recorded");
+        assertShows(DISTRICT, "", "No district recorded");
+        assertShows(DISTRICT, "   ", "No district recorded");
+    }
 
-        String output = display(
-                List.of(
-                        new Column("Capital", Alignment.LEFT),
-                        new Column("Region", Alignment.LEFT)
-                ),
-                Arrays.asList(null, "  ")
-        );
+    @Test
+    @DisplayName("A text that is only a dash shows 'No [heading] recorded'")
+    void dashPlaceholderIsDescribed() {
+        assertShows(DISTRICT, "-", "No district recorded");
+        assertShows(DISTRICT, "\u2013", "No district recorded");
+        assertShows(DISTRICT, "\u2014", "No district recorded");
+    }
 
-        assertTrue(output.contains("No capital recorded"));
-        assertTrue(output.contains("No region recorded"));
+    @Test
+    @DisplayName("A text that merely contains a dash is kept")
+    void textWithDashIsKept() {
+        assertShows(DISTRICT, "Saint-Denis", "Saint-Denis");
+        assertDoesNotShow(DISTRICT, "Saint-Denis", "No district recorded");
     }
 
     @Test
     @DisplayName("A population of 0 shows 'No population recorded'")
     void zeroPopulationIsDescribed() {
-
-        String output = display(
-                List.of(Column.population()),
-                List.of(0L)
-        );
-
-        assertTrue(output.contains("No population recorded"));
+        assertShows(Column.population(), 0L, "No population recorded");
     }
 
     @Test
     @DisplayName("A real population is formatted as a number")
     void realPopulationIsKept() {
-
-        String output = display(
-                List.of(Column.population()),
-                List.of(1500L)
-        );
-
-        assertTrue(output.contains("1,500"));
-        assertFalse(output.contains("No population recorded"));
+        assertShows(Column.population(), 1500L, "1,500");
+        assertDoesNotShow(Column.population(), 1500L, "No population recorded");
     }
 
     @Test
     @DisplayName("0 stays 0 in a column that is not a population column")
     void zeroIsKeptInOtherColumns() {
-
-        String output = display(
-                List.of(new Column("Percentage", Alignment.RIGHT)),
-                List.of(0L)
-        );
-
-        assertFalse(output.contains("No percentage recorded"));
+        assertDoesNotShow(new Column("Percentage", Alignment.RIGHT), 0L, "No percentage recorded");
     }
 }

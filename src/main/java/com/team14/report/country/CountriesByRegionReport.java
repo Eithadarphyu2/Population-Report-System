@@ -1,9 +1,10 @@
 package com.team14.report.country;
 
-import java.util.Objects;
+import com.team14.input.UserInput;
+import com.team14.report.Validation;
 
 /**
- * Requirement 3: all countries in a specified region organised by
+ * Requirement 3: all countries in a specified region organized by
  * largest population to smallest.
  */
 public final class CountriesByRegionReport extends CountryReport {
@@ -11,29 +12,26 @@ public final class CountriesByRegionReport extends CountryReport {
     private final String region;
 
     /**
-     * Creates a country-by-region report.
+     * Creates a country-by-region report using user input.
+     *
+     * @param userInput source used to obtain the region
+     */
+    public CountriesByRegionReport(UserInput userInput) {
+        this(Validation.requireInput(userInput).getRegion());
+    }
+
+    /**
+     * Creates a country-by-region report with a specified region.
      *
      * @param region the region to search
      */
     public CountriesByRegionReport(String region) {
-
-        Objects.requireNonNull(
-                region,
-                "Region cannot be null."
-        );
-
-        if (region.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Region cannot be empty."
-            );
-        }
-
-        this.region = region.trim();
+        this.region = Validation.requireText(region, "Region");
     }
 
     @Override
     public String title() {
-        return "Countries in " + region + " by population";
+        return "Countries in " + region + " by Population";
     }
 
     @Override
