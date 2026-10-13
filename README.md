@@ -1,5 +1,15 @@
 # Population Reporting System
 
+[![Java CI with Maven and Docker Compose](https://github.com/Eithadarphyu2/Population-Report-System/actions/workflows/main.yml/badge.svg)](https://github.com/Eithadarphyu2/Population-Report-System/actions/workflows/main.yml)
+
+[![Master Build](https://img.shields.io/github/actions/workflow/status/Eithadarphyu2/Population-Report-System/main.yml?branch=master&label=master%20build)](https://github.com/Eithadarphyu2/Population-Report-System/actions/workflows/main.yml?query=branch%3Amaster)
+
+[![Develop Build](https://img.shields.io/github/actions/workflow/status/Eithadarphyu2/Population-Report-System/main.yml?branch=develop&label=develop%20build)](https://github.com/Eithadarphyu2/Population-Report-System/actions/workflows/main.yml?query=branch%3Adevelop)
+
+[![Licence](https://img.shields.io/github/license/Eithadarphyu2/Population-Report-System)](LICENSE)
+
+[![Release](https://img.shields.io/github/v/release/Eithadarphyu2/Population-Report-System?include_prereleases)](https://github.com/Eithadarphyu2/Population-Report-System/releases)
+
 ## Project Overview
 
 This project is a population reporting system developed by Team 14.
@@ -25,12 +35,22 @@ The system uses the MySQL `world` database to provide population reports for cou
 - Git & GitHub (GitFlow)
 - GitHub Actions
 - Docker & Docker Compose
+- Zube.io (Product Backlog, Kanban board and Sprints)
 
 ## Use-Case Diagram
 
-The use-case diagram illustrates the main interactions between users and the Population Reporting System.
+The use-case diagram illustrates the main interactions between users and the Population Reporting System. The use cases are grouped by report type, and each use case description lists the individual reports it covers.
 
 ![Population Reporting System Use-Case Diagram](img/use-case/Population%20Report%20System%20Usecase%20Diagram.png)
+
+| ID | Use case | Requirements covered |
+|---|---|---|
+| [UC-01](use-case/UC-01-CountryReport.md) | Country Reports | 1 - 6 |
+| [UC-02](use-case/UC-02-CityReport.md) | City Reports | 7 - 16 |
+| [UC-03](use-case/UC-03-CapitalCityReport.md) | Capital City Reports | 17 - 22 |
+| [UC-04](use-case/UC-04-PopulationDistribution.md) | Population Reports | 23 - 25 |
+| [UC-05](use-case/UC-05-TotalPopulation.md) | Total Population | 26 - 31 |
+| [UC-06](use-case/UC-06-LanguagePopulationReport.md) | Language Report | 32 |
 
 ## Requirements Met
 
@@ -71,9 +91,33 @@ The use-case diagram illustrates the main interactions between users and the Pop
 | 31 | The population of a city. | No | |
 | 32 | The number of people who speak Chinese, English, Hindi, Spanish and Arabic from greatest number to smallest, including the percentage of the world population. | No | |
 
+## Project Management
+
+The team follows Scrum. The Product Backlog, Kanban board and Sprints are managed in Zube.io, which is connected to this GitHub repository. Work is written as user stories in GitHub Issues.
+
+- [Zube.io project board](https://zube.io/team14/population-report-system/w/workspace-1/kanban)
+- [GitHub Issues](https://github.com/Eithadarphyu2/Population-Report-System/issues)
+
+### Releases
+
+All releases are listed on the [Releases page](https://github.com/Eithadarphyu2/Population-Report-System/releases).
+
+### Branching Strategy (GitFlow)
+
+| Branch | Purpose |
+|---|---|
+| `master` | Released, stable code. Every release is tagged. |
+| `develop` | Integration branch for completed features. |
+| `release` | Release preparation and final checks before merging to `master`. |
+| `Report/<name>` | Feature branches for report development. |
+| `use-case/<name>` | Feature branches for use case work. |
+| `project-setup/<name>` | Feature branches for project set-up. |
+
+All changes reach `develop` and `master` through pull requests.
+
 ## Individual Contribution Spreadsheet
 
-The following table records individual contributions and the team agree on the scores before the submission.
+The following table records individual contributions. The team agreed the scores before submission.
 
 | Matriculation Number | Code Review 1 | Code Review 2 |
 |---|---:|---:|
