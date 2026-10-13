@@ -53,8 +53,6 @@ The user requests a country population report.
 
 ## EXTENSIONS
 
-## EXTENSIONS
-
 4\. **Invalid input is provided**:
 1. The system informs the user that the input is invalid.
 2. The user enters valid input.
