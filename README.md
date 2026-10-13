@@ -115,5 +115,3 @@ The following table records individual contributions through two code reviews. T
 | 40840491 | 16.73 | — |
 | 40840485 | 16.73 | — |
 | **Total** | **100** | **—** |
-
-**Note:** Code review scores and totals will be completed after the team agrees on the final scores.

@@ -4,7 +4,7 @@
 
 ### Goal in Context
 
-As a user, I want to generate a language population report so that I can compare the number and percentage of people who speak selected languages.
+As a repot analyst, I want to generate a language population report so that I can compare the number and percentage of people who speak selected languages.
 
 ### Scope
 

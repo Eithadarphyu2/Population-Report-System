@@ -4,7 +4,7 @@
 
 ### Goal in Context
 
-As a user, I want to generate country population reports so that I can view and compare country population information.
+As a report analyst, I want to generate country population reports so that I can view and compare country population information.
 
 ### Scope
 

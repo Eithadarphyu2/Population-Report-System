@@ -4,7 +4,7 @@
 
 ### Goal in Context
 
-As a user, I want to generate population distribution reports so that I can compare total, city and non-city populations.
+As a report analyst, I want to generate population distribution reports so that I can compare total, city and non-city populations.
 
 ### Scope
 
