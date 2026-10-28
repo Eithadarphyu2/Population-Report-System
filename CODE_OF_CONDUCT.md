@@ -348,6 +348,8 @@ The team uses four internal fine levels.
 | **Level 3 – Serious** | A significant failure that affects other team members or project progress | Repeatedly failing to contribute, abandoning assigned work, or repeatedly ignoring agreed responsibilities | −0.5 point |
 | **Level 4 – Major** | Serious misconduct or deliberate harmful behaviour | Deliberately damaging project resources, deliberately misrepresenting contribution, or intentionally taking another member's work as their own | −1 point |
 
+---
+
 ## 10.3 Redistribution of Deducted Marks
 
 - If marks are deducted from a team member, the deducted amount may be redistributed among other team members who have made meaningful contributions to the project.
