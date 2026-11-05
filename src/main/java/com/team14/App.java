@@ -22,6 +22,7 @@ import com.team14.report.city.CitiesByCountryReport;
 import com.team14.report.city.CitiesByDistrictReport;
 import com.team14.report.capitalcity.TopCapitalCitiesByContinentReport;
 import com.team14.report.capitalcity.TopCapitalCitiesByRegionReport;
+import com.team14.report.capitalcity.TopCapitalCitiesWorldwideReport;
 import com.team14.report.capitalcity.CapitalCitiesByContinentReport;
 
 import java.sql.Connection;
@@ -71,6 +72,7 @@ public final class App {
             ),
             new AllCapitalCitiesInWorldReport(),
             new CapitalCitiesByContinentReport(ReportParameters.CONTINENT),
+            new TopCapitalCitiesWorldwideReport(ReportParameters.TOP_N),
             new TopCapitalCitiesByContinentReport(
                     ReportParameters.CONTINENT,
                     ReportParameters.TOP_N
