@@ -20,6 +20,7 @@ import com.team14.report.city.TopCitiesByCountryReport;
 import com.team14.report.city.TopCitiesByRegionReport;
 import com.team14.report.city.CitiesByCountryReport;
 import com.team14.report.city.CitiesByDistrictReport;
+import com.team14.report.capitalcity.TopCapitalCitiesByContinentReport;
 import com.team14.report.capitalcity.TopCapitalCitiesByRegionReport;
 import com.team14.report.capitalcity.TopCapitalCitiesWorldwideReport;
 import com.team14.report.capitalcity.CapitalCitiesByContinentReport;
@@ -72,6 +73,10 @@ public final class App {
             new AllCapitalCitiesInWorldReport(),
             new CapitalCitiesByContinentReport(ReportParameters.CONTINENT),
             new TopCapitalCitiesWorldwideReport(ReportParameters.TOP_N),
+            new TopCapitalCitiesByContinentReport(
+                    ReportParameters.CONTINENT,
+                    ReportParameters.TOP_N
+            ),
             new TopCapitalCitiesByRegionReport(
                     ReportParameters.REGION,
                     ReportParameters.TOP_N
