@@ -67,7 +67,7 @@ public final class App {
                     ReportParameters.DISTRICT,
                     ReportParameters.TOP_N
             ),
-            new AllCapitalCitiesInWorldReport()
+            new AllCapitalCitiesInWorldReport(),
             new CapitalCitiesByContinentReport(ReportParameters.CONTINENT)
     );
 
