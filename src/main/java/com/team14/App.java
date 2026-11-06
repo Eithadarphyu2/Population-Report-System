@@ -73,6 +73,7 @@ public final class App {
             ),
             new AllCapitalCitiesInWorldReport(),
             new CapitalCitiesByContinentReport(ReportParameters.CONTINENT),
+            new CapitalCitiesByRegionReport(ReportParameters.REGION),
             new TopCapitalCitiesWorldwideReport(ReportParameters.TOP_N),
             new TopCapitalCitiesByContinentReport(
                     ReportParameters.CONTINENT,
@@ -81,8 +82,7 @@ public final class App {
             new TopCapitalCitiesByRegionReport(
                     ReportParameters.REGION,
                     ReportParameters.TOP_N
-            ),
-            new CapitalCitiesByRegionReport(ReportParameters.REGION)
+            )
     );
 
     private App() {
