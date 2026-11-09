@@ -26,6 +26,7 @@ import com.team14.report.capitalcity.TopCapitalCitiesWorldwideReport;
 import com.team14.report.capitalcity.CapitalCitiesByContinentReport;
 import com.team14.report.capitalcity.CapitalCitiesByRegionReport;
 import com.team14.report.population.PopulationDistributionByContinentReport;
+import com.team14.report.population.WorldPopulationReport;
 import com.team14.report.population.ContinentPopulationReport;
 import com.team14.report.population.CountryPopulationReport;
 
@@ -87,6 +88,7 @@ public final class App {
                     ReportParameters.TOP_N
             ),
             new PopulationDistributionByContinentReport(),
+            new WorldPopulationReport(),
             new ContinentPopulationReport(ReportParameters.CONTINENT),
             new CountryPopulationReport(ReportParameters.COUNTRY)
     );
