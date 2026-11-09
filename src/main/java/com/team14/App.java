@@ -28,6 +28,7 @@ import com.team14.report.capitalcity.CapitalCitiesByRegionReport;
 import com.team14.report.population.PopulationDistributionByContinentReport;
 import com.team14.report.population.WorldPopulationReport;
 import com.team14.report.population.ContinentPopulationReport;
+import com.team14.report.population.RegionPopulationReport;
 import com.team14.report.population.CountryPopulationReport;
 
 import java.sql.Connection;
@@ -90,6 +91,7 @@ public final class App {
             new PopulationDistributionByContinentReport(),
             new WorldPopulationReport(),
             new ContinentPopulationReport(ReportParameters.CONTINENT),
+            new RegionPopulationReport(),
             new CountryPopulationReport(ReportParameters.COUNTRY)
     );
 
