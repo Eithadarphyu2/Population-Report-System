@@ -3,6 +3,7 @@ package com.team14;
 import com.team14.config.ReportParameters;
 import com.team14.database.DatabaseConnection;
 import com.team14.report.Report;
+import com.team14.report.capitalcity.AllCapitalCitiesInWorldReport;
 import com.team14.report.city.AllCitiesInWorldReport;
 import com.team14.report.country.AllCountriesInWorldReport;
 import com.team14.report.country.CountriesByContinentReport;
@@ -19,6 +20,20 @@ import com.team14.report.city.TopCitiesByCountryReport;
 import com.team14.report.city.TopCitiesByRegionReport;
 import com.team14.report.city.CitiesByCountryReport;
 import com.team14.report.city.CitiesByDistrictReport;
+import com.team14.report.capitalcity.TopCapitalCitiesByContinentReport;
+import com.team14.report.capitalcity.TopCapitalCitiesByRegionReport;
+import com.team14.report.capitalcity.TopCapitalCitiesWorldwideReport;
+import com.team14.report.capitalcity.CapitalCitiesByContinentReport;
+import com.team14.report.capitalcity.CapitalCitiesByRegionReport;
+import com.team14.report.population.PopulationDistributionByContinentReport;
+import com.team14.report.population.PopulationDistributionByRegionReport;
+import com.team14.report.population.PopulationDistributionByCountryReport;
+import com.team14.report.population.WorldPopulationReport;
+import com.team14.report.population.ContinentPopulationReport;
+import com.team14.report.population.RegionPopulationReport;
+import com.team14.report.population.CountryPopulationReport;
+import com.team14.report.population.DistrictPopulationReport;
+import com.team14.report.population.CityPopulationReport;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -64,7 +79,28 @@ public final class App {
             new TopCitiesByDistrictReport(
                     ReportParameters.DISTRICT,
                     ReportParameters.TOP_N
-            )
+            ),
+            new AllCapitalCitiesInWorldReport(),
+            new CapitalCitiesByContinentReport(ReportParameters.CONTINENT),
+            new CapitalCitiesByRegionReport(ReportParameters.REGION),
+            new TopCapitalCitiesWorldwideReport(ReportParameters.TOP_N),
+            new TopCapitalCitiesByContinentReport(
+                    ReportParameters.CONTINENT,
+                    ReportParameters.TOP_N
+            ),
+            new TopCapitalCitiesByRegionReport(
+                    ReportParameters.REGION,
+                    ReportParameters.TOP_N
+            ),
+            new PopulationDistributionByContinentReport(),
+            new PopulationDistributionByRegionReport(),
+            new PopulationDistributionByCountryReport(),
+            new WorldPopulationReport(),
+            new ContinentPopulationReport(ReportParameters.CONTINENT),
+            new RegionPopulationReport(ReportParameters.REGION),
+            new CountryPopulationReport(ReportParameters.COUNTRY),
+            new DistrictPopulationReport(ReportParameters.DISTRICT),
+            new CityPopulationReport(ReportParameters.CITY)
     );
 
     private App() {
