@@ -97,7 +97,7 @@ public final class App {
             new PopulationDistributionByCountryReport(),
             new WorldPopulationReport(),
             new ContinentPopulationReport(ReportParameters.CONTINENT),
-            new RegionPopulationReport(),
+            new RegionPopulationReport(ReportParameters.REGION),
             new CountryPopulationReport(ReportParameters.COUNTRY),
             new DistrictPopulationReport(ReportParameters.DISTRICT),
             new CityPopulationReport(ReportParameters.CITY)
