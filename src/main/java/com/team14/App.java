@@ -34,6 +34,7 @@ import com.team14.report.population.RegionPopulationReport;
 import com.team14.report.population.CountryPopulationReport;
 import com.team14.report.population.DistrictPopulationReport;
 import com.team14.report.population.CityPopulationReport;
+import com.team14.report.language.LanguagePopulationReport;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -100,7 +101,8 @@ public final class App {
             new RegionPopulationReport(ReportParameters.REGION),
             new CountryPopulationReport(ReportParameters.COUNTRY),
             new DistrictPopulationReport(ReportParameters.DISTRICT),
-            new CityPopulationReport(ReportParameters.CITY)
+            new CityPopulationReport(ReportParameters.CITY),
+            new LanguagePopulationReport()
     );
 
     private App() {
