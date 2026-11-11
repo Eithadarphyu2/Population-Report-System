@@ -82,35 +82,35 @@ The use-case diagram illustrates the main interactions between users and the Pop
 
 ### 3. Capital City Reports
 
-| ID | Requirement | Status | Screenshot |
-|---|---|---|---|
-| 17 | All capital cities in the world, ordered by population from largest to smallest. | No | |
-| 18 | All capital cities in a continent, ordered by population from largest to smallest. | No | |
-| 19 | All capital cities in a region, ordered by population from largest to smallest. | No | |
-| 20 | The top N most populated capital cities in the world, where N is provided by the user. | No | |
-| 21 | The top N most populated capital cities in a continent, where N is provided by the user. | No | |
-| 22 | The top N most populated capital cities in a region, where N is provided by the user. | No | |
+| ID | Requirement | Status | Screenshot                                             |
+|---|---|--------|--------------------------------------------------------|
+| 17 | All capital cities in the world, ordered by population from largest to smallest. | Yes    | ![Requirement 17](img/capital-city-reports/req-17.png) |
+| 18 | All capital cities in a continent, ordered by population from largest to smallest. | Yes    | ![Requirement 18](img/capital-city-reports/req-18.png) |
+| 19 | All capital cities in a region, ordered by population from largest to smallest. | Yes    | ![Requirement 19](img/capital-city-reports/req-19.png) |
+| 20 | The top N most populated capital cities in the world, where N is provided by the user. | Yes    | ![Requirement 20](img/capital-city-reports/req-20.png) |
+| 21 | The top N most populated capital cities in a continent, where N is provided by the user. | Yes    | ![Requirement 21](img/capital-city-reports/req-21.png) |
+| 22 | The top N most populated capital cities in a region, where N is provided by the user. | Yes    | ![Requirement 22](img/capital-city-reports/req-22.png) |
 
 ### 4. Population Reports
 
 #### 4.1 Population Living in Cities and Outside Cities
 
-| ID | Requirement | Status | Screenshot |
-|---|---|---|---|
-| 23 | The population of people, people living in cities, and people not living in cities in each continent. | No | |
-| 24 | The population of people, people living in cities, and people not living in cities in each region. | No | |
-| 25 | The population of people, people living in cities, and people not living in cities in each country. | No | |
+| ID | Requirement | Status | Screenshot                                           |
+|---|---|--------|------------------------------------------------------|
+| 23 | The population of people, people living in cities, and people not living in cities in each continent. | Yes    | ![Requirement 23](img/population-reports/req-23.png) |
+| 24 | The population of people, people living in cities, and people not living in cities in each region. | Yes    | ![Requirement 24](img/population-reports/req-24.png) |
+| 25 | The population of people, people living in cities, and people not living in cities in each country. | Yes    | ![Requirement 25](img/population-reports/req-25.png) |
 
 #### 4.2 Total Population
 
-| ID | Requirement | Status | Screenshot |
-|---|---|---|---|
-| 26 | The population of the world. | No | |
-| 27 | The population of a continent. | No | |
-| 28 | The population of a region. | No | |
-| 29 | The population of a country. | No | |
-| 30 | The population of a district. | No | |
-| 31 | The population of a city. | No | |
+| ID | Requirement | Status | Screenshot                                           |
+|---|---|--------|------------------------------------------------------|
+| 26 | The population of the world. | Yes    | ![Requirement 26](img/population-reports/req-26.png) |
+| 27 | The population of a continent. | Yes    | ![Requirement 27](img/population-reports/req-27.png) |
+| 28 | The population of a region. | Yes    | ![Requirement 28](img/population-reports/req-28.png) |
+| 29 | The population of a country. | Yes    | ![Requirement 29](img/population-reports/req-29.png) |
+| 30 | The population of a district. | Yes    | ![Requirement 30](img/population-reports/req-30.png) |
+| 31 | The population of a city. | Yes    | ![Requirement 31](img/population-reports/req-31.png) |
 
 ### 5. Language Reports
 
