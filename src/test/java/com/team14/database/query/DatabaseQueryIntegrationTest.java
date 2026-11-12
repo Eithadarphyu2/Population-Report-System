@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for DatabaseQuery (needs the MySQL container).
  */
-class DatabaseQueryTest {
+class DatabaseQueryIntegrationTest {
 
     /**
      * Simple result object used by the tests.
