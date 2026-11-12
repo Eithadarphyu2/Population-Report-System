@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for the DatabaseConnection utility (needs the MySQL container).
  */
-class DatabaseConnectionTest {
+class DatabaseConnectionIntegrationTest {
 
     @Test
     @DisplayName("Verify Database Connection Status and Metadata")
