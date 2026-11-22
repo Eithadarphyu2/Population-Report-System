@@ -113,23 +113,43 @@ public final class App {
 
     /**
      * Starts the application: checks the database, then prints all reports.
+     * The program ends with exit code 1 if the database or a report fails.
      *
      * @param args command line arguments (not used)
      */
     public static void main(String[] args) {
 
+        int exitCode = run();
+
+        if (exitCode != 0) {
+            System.exit(exitCode);
+        }
+    }
+
+    /**
+     * Runs the application without ending the program, so it can be tested.
+     *
+     * @return 0 if the database and every report worked, otherwise 1
+     */
+    static int run() {
+
         try {
             checkDatabaseConnection();
         } catch (SQLException e) {
             System.err.println("Database error: " + e.getMessage());
-            System.exit(1);
+            return 1;
         }
 
-        int failures = runAllReports();
+        return runReports(REPORTS) > 0 ? 1 : 0;
+    }
 
-        if (failures > 0) {
-            System.exit(1);
-        }
+    /**
+     * Gives the tests the reports the application runs.
+     *
+     * @return every registered report, in the order they are printed
+     */
+    static List<Report> reports() {
+        return REPORTS;
     }
 
     private static void checkDatabaseConnection() throws SQLException {
@@ -142,11 +162,18 @@ public final class App {
         }
     }
 
-    private static int runAllReports() {
+    /**
+     * Runs the given reports one after the other. A report that fails is
+     * reported and skipped, so one broken report does not stop the others.
+     *
+     * @param reports the reports to run
+     * @return the number of reports that failed
+     */
+    static int runReports(List<Report> reports) {
 
         int failures = 0;
 
-        for (Report report : REPORTS) {
+        for (Report report : reports) {
             try {
                 report.run();
             } catch (SQLException e) {
