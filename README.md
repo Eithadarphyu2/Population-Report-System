@@ -8,6 +8,8 @@
 
 [![Release](https://img.shields.io/github/v/release/Eithadarphyu2/Population-Report-System?include_prereleases)](https://github.com/Eithadarphyu2/Population-Report-System/releases)
 
+[![codecov](https://codecov.io/gh/Eithadarphyu2/Population-Report-System/graph/badge.svg?token=KMOULDA7A8)](https://codecov.io/gh/Eithadarphyu2/Population-Report-System)
+
 ## Project Overview
 
 This project is a population reporting system developed by Team 14.
