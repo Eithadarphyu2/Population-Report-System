@@ -85,6 +85,14 @@ jobs:
           DB_PASSWORD: apppassword
         run: mvn --batch-mode test
 
+      # Sends the JaCoCo report to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: target/site/jacoco/jacoco.xml
+          fail_ci_if_error: true
+
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
