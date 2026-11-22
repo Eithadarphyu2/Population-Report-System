@@ -1,4 +1,4 @@
-name: Java CI with Maven and Docker Compose
+name: CI
 
 on:
   push:
@@ -10,19 +10,27 @@ on:
       - master
       - develop
 
+permissions:
+  contents: read
+
+# Stop an older run of the same branch when a newer commit is pushed
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
-  build-and-test:
-    name: Build, Test and Docker Compose
+  # Unit tests (no database needed)
+
+  unit-tests:
+    name: Unit tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-
-      # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up Java 21
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -30,36 +38,113 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # Build the application JAR without running tests
-      - name: Build application with Maven
-        run: mvn clean package -DskipTests
+      # Runs every test except the ones whose name ends in IntegrationTest
+      - name: Run unit tests
+        run: mvn --batch-mode test '-Dtest=!*IntegrationTest'
 
-     # Start MySQL and wait until the mysql health check passes
-      - name: Start Docker Compose
-        run: |
-          docker compose up -d --build
-          echo "Waiting for MySQL to be ready..."
-          until docker exec population-report-mysql mysqladmin ping -h "127.0.0.1" -u root -prootpassword --silent; do
-            sleep 2
-          done
-          echo "MySQL is ready!"
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: target/surefire-reports
 
-      # Run Maven integration tests
-      - name: Run integration tests
+  # Integration tests (MySQL in Docker) and coverage
+
+  integration-tests:
+    name: Integration tests
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      # Start only the database, then wait until the world data is loaded
+      - name: Start MySQL
+        run: docker compose up -d mysql
+
+      - name: Wait for MySQL
+        run: bash .github/scripts/wait-for-mysql.sh
+
+      # Runs every test (unit and integration) so the coverage report is complete
+      - name: Run all tests
         env:
           DB_HOST: localhost
           DB_PORT: 3306
           DB_NAME: world
           DB_USER: appuser
           DB_PASSWORD: apppassword
-        run: mvn test
+        run: mvn --batch-mode test
 
-      # Show container logs if a step fails
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+          if-no-files-found: ignore
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-reports
+          path: target/surefire-reports
+
+      - name: Show MySQL logs
+        if: failure()
+        run: docker compose logs mysql
+
+      - name: Stop MySQL
+        if: always()
+        run: docker compose down -v
+
+  # Build the JAR, then build and run the Docker image
+
+  build:
+    name: Build and Docker
+    needs: integration-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      # The tests already ran in the earlier jobs
+      - name: Build self-contained JAR
+        run: mvn --batch-mode clean package -DskipTests
+
+      - name: Start MySQL
+        run: docker compose up -d mysql
+
+      - name: Wait for MySQL
+        run: bash .github/scripts/wait-for-mysql.sh
+
+      # Builds the image, runs the application and fails if it exits with an error
+      - name: Build and run the Docker image
+        run: docker compose up --build --exit-code-from app app
+
       - name: Show Docker logs
         if: failure()
         run: docker compose logs
 
-      # Stop containers and remove resources
-      - name: Clean up Docker Compose
+      - name: Stop containers
         if: always()
         run: docker compose down -v
