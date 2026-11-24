@@ -1,11 +1,17 @@
-
 package com.team14.report.capitalcity;
 
 import com.team14.input.UserInput;
+import com.team14.report.FakeResultSet;
 import com.team14.report.ReportDefinition;
+import com.team14.report.ReportDisplay.Alignment;
 import com.team14.report.ReportDisplay.Column;
+import com.team14.report.SqlReport;
+
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,311 +20,412 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@DisplayName("Capital City Report Tests")
 class CapitalCityReportTest {
 
+    private static final String BY_POPULATION =
+            "ORDER BY ci.Population DESC";
+
+    // ---------------------------------------------------------------- helpers
+
+    /** A UserInput that reads the given lines instead of the keyboard. */
     private static UserInput typing(String... lines) {
         return new UserInput(
                 new Scanner(String.join("\n", lines) + "\n")
         );
     }
 
-    // --------------------------------------------------
-    // Common Capital City Report Tests
-    // --------------------------------------------------
+    /**
+     * Checks the title, SQL clauses and parameters of a report,
+     * and verifies that every SQL placeholder has a parameter.
+     */
+    private static void assertDefinition(
+            SqlReport report,
+            String title,
+            String clauses,
+            Object... parameters) {
 
-    @Test
-    void baseReportUsesCommonCapitalCityQueryAndColumns() {
-        CapitalCityReport report = new AllCapitalCitiesInWorldReport();
-
-        String select = ReportDefinition.select(report);
-        List<Column> columns = ReportDefinition.columns(report);
-
-        assertTrue(select.contains(
-                "SELECT ci.Name, c.Name AS Country, ci.Population"
-        ));
-        assertTrue(select.contains("FROM country c"));
-        assertTrue(select.contains(
-                "JOIN city ci ON c.Capital = ci.ID"
-        ));
-
-        assertEquals(3, columns.size());
-    }
-
-    // --------------------------------------------------
-    // All Capital Cities in the World
-    // --------------------------------------------------
-
-    @Test
-    void allCapitalCitiesInWorldReportHasCorrectTitleAndOrdering() {
-        AllCapitalCitiesInWorldReport report =
-                new AllCapitalCitiesInWorldReport();
+        assertEquals(title, report.title());
+        assertEquals(clauses, ReportDefinition.clauses(report));
+        assertArrayEquals(parameters, ReportDefinition.parameters(report));
 
         assertEquals(
+                ReportDefinition.placeholders(report),
+                parameters.length,
+                "Every ? in the SQL needs one parameter"
+        );
+    }
+
+    // ------------------------------------------- all capital cities worldwide
+
+    @Test
+    @DisplayName("All capital cities worldwide: sorted by population, no parameters")
+    void allCapitalCitiesInWorld() {
+        assertDefinition(
+                new AllCapitalCitiesInWorldReport(),
                 "All Capital Cities in the World by Population",
-                report.title()
-        );
-
-        assertTrue(
-                ReportDefinition.clauses(report)
-                        .contains("ORDER BY ci.Population DESC")
+                BY_POPULATION
         );
     }
 
-    @Test
-    void allCapitalCitiesInWorldReportHasNoParameters() {
-        AllCapitalCitiesInWorldReport report =
-                new AllCapitalCitiesInWorldReport();
-
-        assertArrayEquals(
-                new Object[]{},
-                ReportDefinition.parameters(report)
-        );
-    }
-
-    // --------------------------------------------------
-    // Capital Cities by Continent
-    // --------------------------------------------------
+    // ------------------------------------------- capital cities by continent
 
     @Test
-    void capitalCitiesByContinentReportUsesContinentFilter() {
-        CapitalCitiesByContinentReport report =
-                new CapitalCitiesByContinentReport("Europe");
-
-        assertEquals(
+    @DisplayName("Capital cities in a continent: title, SQL and parameter")
+    void capitalCitiesByContinent() {
+        assertDefinition(
+                new CapitalCitiesByContinentReport("Europe"),
                 "Capital Cities in Europe by Population",
-                report.title()
-        );
-
-        String clauses = ReportDefinition.clauses(report);
-
-        assertTrue(clauses.contains("WHERE c.Continent = ?"));
-        assertTrue(clauses.contains("ORDER BY ci.Population DESC"));
-
-        assertArrayEquals(
-                new Object[]{"Europe"},
-                ReportDefinition.parameters(report)
+                "WHERE c.Continent = ? " + BY_POPULATION,
+                "Europe"
         );
     }
 
     @Test
-    void capitalCitiesByContinentReportRejectsBlankContinent() {
+    @DisplayName("Capital cities in a continent: spaces around the continent are removed")
+    void capitalCitiesByContinentTrims() {
+        assertDefinition(
+                new CapitalCitiesByContinentReport("  Asia "),
+                "Capital Cities in Asia by Population",
+                "WHERE c.Continent = ? " + BY_POPULATION,
+                "Asia"
+        );
+    }
+
+    @Test
+    @DisplayName("Capital cities in a continent: a null or blank continent is rejected")
+    void capitalCitiesByContinentRejectsBlank() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CapitalCitiesByContinentReport(" ")
+                () -> new CapitalCitiesByContinentReport((String) null)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new CapitalCitiesByContinentReport("   ")
         );
     }
 
     @Test
-    void capitalCitiesByContinentReportRejectsNullUserInput() {
+    @DisplayName("Capital cities in a continent: continent can be read from user input")
+    void capitalCitiesByContinentFromInput() {
+        assertArrayEquals(
+                new Object[]{"Africa"},
+                ReportDefinition.parameters(
+                        new CapitalCitiesByContinentReport(typing("Africa"))
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Capital cities in a continent: null user input is rejected")
+    void capitalCitiesByContinentRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
                 () -> new CapitalCitiesByContinentReport((UserInput) null)
         );
     }
 
-    @Test
-    void capitalCitiesByContinentReportAcceptsUserInput() {
-        CapitalCitiesByContinentReport report =
-                new CapitalCitiesByContinentReport(
-                        typing("Europe")
-                );
-
-        assertEquals(
-                "Capital Cities in Europe by Population",
-                report.title()
-        );
-
-        assertArrayEquals(
-                new Object[]{"Europe"},
-                ReportDefinition.parameters(report)
-        );
-    }
-
-    // --------------------------------------------------
-    // Capital Cities by Region
-    // --------------------------------------------------
+    // ------------------------------------------- capital cities by region
 
     @Test
-    void capitalCitiesByRegionReportUsesRegionFilter() {
-        CapitalCitiesByRegionReport report =
-                new CapitalCitiesByRegionReport("Southern Europe");
-
-        assertEquals(
+    @DisplayName("Capital cities in a region: title, SQL and parameter")
+    void capitalCitiesByRegion() {
+        assertDefinition(
+                new CapitalCitiesByRegionReport("Southern Europe"),
                 "Capital Cities in Southern Europe by Population",
-                report.title()
-        );
-
-        String clauses = ReportDefinition.clauses(report);
-
-        assertTrue(clauses.contains("WHERE c.Region = ?"));
-        assertTrue(clauses.contains("ORDER BY ci.Population DESC"));
-
-        assertArrayEquals(
-                new Object[]{"Southern Europe"},
-                ReportDefinition.parameters(report)
+                "WHERE c.Region = ? " + BY_POPULATION,
+                "Southern Europe"
         );
     }
 
     @Test
-    void capitalCitiesByRegionReportRejectsBlankRegion() {
+    @DisplayName("Capital cities in a region: spaces around the region are removed")
+    void capitalCitiesByRegionTrims() {
+        assertDefinition(
+                new CapitalCitiesByRegionReport(" Caribbean "),
+                "Capital Cities in Caribbean by Population",
+                "WHERE c.Region = ? " + BY_POPULATION,
+                "Caribbean"
+        );
+    }
+
+    @Test
+    @DisplayName("Capital cities in a region: a null or blank region is rejected")
+    void capitalCitiesByRegionRejectsBlank() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CapitalCitiesByRegionReport(" ")
+                () -> new CapitalCitiesByRegionReport((String) null)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new CapitalCitiesByRegionReport("   ")
         );
     }
 
     @Test
-    void capitalCitiesByRegionReportRejectsNullUserInput() {
+    @DisplayName("Capital cities in a region: region can be read from user input")
+    void capitalCitiesByRegionFromInput() {
+        assertArrayEquals(
+                new Object[]{"Polynesia"},
+                ReportDefinition.parameters(
+                        new CapitalCitiesByRegionReport(typing("Polynesia"))
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Capital cities in a region: null user input is rejected")
+    void capitalCitiesByRegionRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
                 () -> new CapitalCitiesByRegionReport((UserInput) null)
         );
     }
 
-    @Test
-    void capitalCitiesByRegionReportAcceptsUserInput() {
-        CapitalCitiesByRegionReport report =
-                new CapitalCitiesByRegionReport(
-                        typing("Southern Europe")
-                );
-
-        assertEquals(
-                "Capital Cities in Southern Europe by Population",
-                report.title()
-        );
-
-        assertArrayEquals(
-                new Object[]{"Southern Europe"},
-                ReportDefinition.parameters(report)
-        );
-    }
-
-    // --------------------------------------------------
-    // Top Capital Cities by Continent
-    // --------------------------------------------------
+    // ------------------------------------------- top N capital cities worldwide
 
     @Test
-    void topCapitalCitiesByContinentReportUsesContinentAndLimitParameters() {
-        TopCapitalCitiesByContinentReport report =
-                new TopCapitalCitiesByContinentReport("Europe", 5);
-
-        assertEquals(
-                "Top 5 Populated Capital Cities in Europe",
-                report.title()
-        );
-
-        String clauses = ReportDefinition.clauses(report);
-
-        assertTrue(clauses.contains("WHERE c.Continent = ?"));
-        assertTrue(clauses.contains("ORDER BY ci.Population DESC"));
-        assertTrue(clauses.contains("LIMIT ?"));
-
-        assertArrayEquals(
-                new Object[]{"Europe", 5},
-                ReportDefinition.parameters(report)
-        );
-    }
-
-    @Test
-    void topCapitalCitiesByContinentReportRejectsInvalidLimit() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new TopCapitalCitiesByContinentReport("Europe", 0)
-        );
-    }
-
-    // --------------------------------------------------
-    // Top Capital Cities by Region
-    // --------------------------------------------------
-
-    @Test
-    void topCapitalCitiesByRegionReportUsesRegionAndLimitParameters() {
-        TopCapitalCitiesByRegionReport report =
-                new TopCapitalCitiesByRegionReport("Southern Europe", 5);
-
-        assertEquals(
-                "Top 5 Populated Capital Cities in Southern Europe",
-                report.title()
-        );
-
-        String clauses = ReportDefinition.clauses(report);
-
-        assertTrue(clauses.contains("WHERE c.Region = ?"));
-        assertTrue(clauses.contains("ORDER BY ci.Population DESC"));
-        assertTrue(clauses.contains("LIMIT ?"));
-
-        assertArrayEquals(
-                new Object[]{"Southern Europe", 5},
-                ReportDefinition.parameters(report)
-        );
-    }
-
-    @Test
-    void topCapitalCitiesByRegionReportRejectsInvalidLimit() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new TopCapitalCitiesByRegionReport(
-                        "Southern Europe", 0
-                )
-        );
-    }
-
-    // --------------------------------------------------
-    // Top Capital Cities Worldwide
-    // --------------------------------------------------
-
-    @Test
-    void topCapitalCitiesWorldwideReportUsesLimitParameter() {
-        TopCapitalCitiesWorldwideReport report =
-                new TopCapitalCitiesWorldwideReport(5);
-
-        assertEquals(
+    @DisplayName("Top N capital cities worldwide: title, SQL and parameter")
+    void topCapitalCitiesWorldwide() {
+        assertDefinition(
+                new TopCapitalCitiesWorldwideReport(5),
                 "Top 5 Populated Capital Cities Worldwide",
-                report.title()
-        );
-
-        String clauses = ReportDefinition.clauses(report);
-
-        assertTrue(clauses.contains("ORDER BY ci.Population DESC"));
-        assertTrue(clauses.contains("LIMIT ?"));
-
-        assertArrayEquals(
-                new Object[]{5},
-                ReportDefinition.parameters(report)
+                BY_POPULATION + " LIMIT ?",
+                5
         );
     }
 
     @Test
-    void topCapitalCitiesWorldwideReportRejectsInvalidLimit() {
+    @DisplayName("Top N capital cities worldwide: N must be greater than 0")
+    void topCapitalCitiesWorldwideRejectsBadN() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new TopCapitalCitiesWorldwideReport(0)
         );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new TopCapitalCitiesWorldwideReport(-1)
+        );
     }
 
     @Test
-    void topCapitalCitiesWorldwideReportRejectsNullUserInput() {
+    @DisplayName("Top N capital cities worldwide: N can be read from user input")
+    void topCapitalCitiesWorldwideFromInput() {
+        assertArrayEquals(
+                new Object[]{8},
+                ReportDefinition.parameters(
+                        new TopCapitalCitiesWorldwideReport(typing("8"))
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Top N capital cities worldwide: null user input is rejected")
+    void topCapitalCitiesWorldwideRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
                 () -> new TopCapitalCitiesWorldwideReport((UserInput) null)
         );
     }
 
+    // ------------------------------------------- top N capital cities by continent
+
     @Test
-    void topCapitalCitiesWorldwideReportAcceptsUserInput() {
-        TopCapitalCitiesWorldwideReport report =
-                new TopCapitalCitiesWorldwideReport(
-                        typing("5")
+    @DisplayName("Top N capital cities in a continent: title, SQL and parameters")
+    void topCapitalCitiesByContinent() {
+        assertDefinition(
+                new TopCapitalCitiesByContinentReport("Asia", 5),
+                "Top 5 Populated Capital Cities in Asia",
+                "WHERE c.Continent = ? " + BY_POPULATION + " LIMIT ?",
+                "Asia",
+                5
+        );
+    }
+
+    @Test
+    @DisplayName("Top N capital cities in a continent: spaces are removed")
+    void topCapitalCitiesByContinentTrims() {
+        assertArrayEquals(
+                new Object[]{"Europe", 3},
+                ReportDefinition.parameters(
+                        new TopCapitalCitiesByContinentReport(" Europe ", 3)
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Top N capital cities in a continent: blank continent or bad N is rejected")
+    void topCapitalCitiesByContinentRejectsBadValues() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new TopCapitalCitiesByContinentReport("  ", 5)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new TopCapitalCitiesByContinentReport("Asia", 0)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new TopCapitalCitiesByContinentReport("Asia", -1)
+        );
+    }
+
+    @Test
+    @DisplayName("Top N capital cities in a continent: values are read from user input")
+    void topCapitalCitiesByContinentFromInput() {
+        assertArrayEquals(
+                new Object[]{"Oceania", 2},
+                ReportDefinition.parameters(
+                        new TopCapitalCitiesByContinentReport(
+                                typing("Oceania", "2")
+                        )
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Top N capital cities in a continent: null user input is rejected")
+    void topCapitalCitiesByContinentRejectsNullInput() {
+        assertThrows(
+                NullPointerException.class,
+                () -> new TopCapitalCitiesByContinentReport((UserInput) null)
+        );
+    }
+
+    // ------------------------------------------- top N capital cities by region
+
+    @Test
+    @DisplayName("Top N capital cities in a region: title, SQL and parameters")
+    void topCapitalCitiesByRegion() {
+        assertDefinition(
+                new TopCapitalCitiesByRegionReport("Southern Europe", 5),
+                "Top 5 Populated Capital Cities in Southern Europe",
+                "WHERE c.Region = ? " + BY_POPULATION + " LIMIT ?",
+                "Southern Europe",
+                5
+        );
+    }
+
+    @Test
+    @DisplayName("Top N capital cities in a region: spaces are removed")
+    void topCapitalCitiesByRegionTrims() {
+        assertArrayEquals(
+                new Object[]{"Caribbean", 4},
+                ReportDefinition.parameters(
+                        new TopCapitalCitiesByRegionReport(" Caribbean ", 4)
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Top N capital cities in a region: blank region or bad N is rejected")
+    void topCapitalCitiesByRegionRejectsBadValues() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new TopCapitalCitiesByRegionReport("  ", 5)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new TopCapitalCitiesByRegionReport("Caribbean", 0)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new TopCapitalCitiesByRegionReport("Caribbean", -1)
+        );
+    }
+
+    @Test
+    @DisplayName("Top N capital cities in a region: values are read from user input")
+    void topCapitalCitiesByRegionFromInput() {
+        assertArrayEquals(
+                new Object[]{"Melanesia", 6},
+                ReportDefinition.parameters(
+                        new TopCapitalCitiesByRegionReport(
+                                typing("Melanesia", "6")
+                        )
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Top N capital cities in a region: null user input is rejected")
+    void topCapitalCitiesByRegionRejectsNullInput() {
+        assertThrows(
+                NullPointerException.class,
+                () -> new TopCapitalCitiesByRegionReport((UserInput) null)
+        );
+    }
+
+    // ------------------------------------------- shared CapitalCityReport code
+
+    @Test
+    @DisplayName("Capital city reports show the required report columns")
+    void capitalCityColumns() {
+
+        List<Column> columns =
+                ReportDefinition.columns(
+                        new AllCapitalCitiesInWorldReport()
                 );
 
         assertEquals(
-                "Top 5 Populated Capital Cities Worldwide",
-                report.title()
+                List.of("Name", "Country", "Population"),
+                columns.stream().map(Column::heading).toList()
         );
 
-        assertArrayEquals(
-                new Object[]{5},
-                ReportDefinition.parameters(report)
+        assertEquals(Alignment.RIGHT, columns.get(2).alignment());
+        assertTrue(columns.get(2).zeroIsMissing());
+    }
+
+    @Test
+    @DisplayName("Capital city reports select from country and join city")
+    void capitalCitySelect() {
+
+        String select =
+                ReportDefinition.select(
+                        new AllCapitalCitiesInWorldReport()
+                );
+
+        assertTrue(
+                select.startsWith(
+                        "SELECT ci.Name, c.Name AS Country, ci.Population"
+                )
+        );
+
+        assertTrue(select.contains("FROM country c"));
+        assertTrue(
+                select.contains(
+                        "JOIN city ci ON c.Capital = ci.ID"
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("A capital city row is read into the three report values")
+    void readsCapitalCityRow() throws SQLException {
+
+        ResultSet row = FakeResultSet.row(
+                "Name", "London",
+                "Country", "United Kingdom",
+                "Population", 8982000L
+        );
+
+        assertEquals(
+                List.of(
+                        "London",
+                        "United Kingdom",
+                        8982000L
+                ),
+                ReportDefinition.readRow(
+                        new AllCapitalCitiesInWorldReport(),
+                        row
+                )
         );
     }
 }
