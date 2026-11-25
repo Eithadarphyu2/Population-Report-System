@@ -52,6 +52,10 @@ The use-case diagram illustrates the main interactions between users and the Pop
 | [UC-05](use-case/UC-05-TotalPopulation.md) | Total Population | 26 - 31 |
 | [UC-06](use-case/UC-06-LanguagePopulationReport.md) | Language Report | 32 |
 
+## Reporting Bugs
+
+Found a problem? [Report a bug](https://github.com/Eithadarphyu2/Population-Report-System/issues/new?template=bug_report.md) using the bug report template. Please describe the steps to reproduce it, what you expected, and what happened.
+
 ## Requirements Met
 
 16 out of 32 requirements have been implemented, representing **50% completion**.
@@ -116,9 +120,9 @@ The use-case diagram illustrates the main interactions between users and the Pop
 
 ### 5. Language Reports
 
-| ID | Requirement | Status | Screenshot |
-|---|---|---|---|
-| 32 | The number of people who speak Chinese, English, Hindi, Spanish, and Arabic, ordered from greatest to smallest, including the percentage of the world population. | No | |
+| ID | Requirement | Status | Screenshot                                       |
+|---|---|--------|--------------------------------------------------|
+| 32 | The number of people who speak Chinese, English, Hindi, Spanish, and Arabic, ordered from greatest to smallest, including the percentage of the world population. | Yes | ![Requirement 32](img/language-report/req-32.png) |
 
 ## Project Management
 
