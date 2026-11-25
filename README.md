@@ -1,14 +1,14 @@
 # Population Reporting System
 
-[![Java CI with Maven and Docker Compose](https://github.com/Eithadarphyu2/Population-Report-System/actions/workflows/main.yml/badge.svg)](https://github.com/Eithadarphyu2/Population-Report-System/actions/workflows/main.yml)
-
 [![Master Build](https://img.shields.io/github/actions/workflow/status/Eithadarphyu2/Population-Report-System/main.yml?branch=master&label=master%20build)](https://github.com/Eithadarphyu2/Population-Report-System/actions/workflows/main.yml?query=branch%3Amaster)
 
 [![Develop Build](https://img.shields.io/github/actions/workflow/status/Eithadarphyu2/Population-Report-System/main.yml?branch=develop&label=develop%20build)](https://github.com/Eithadarphyu2/Population-Report-System/actions/workflows/main.yml?query=branch%3Adevelop)
 
+[![Coverage](https://codecov.io/gh/Eithadarphyu2/Population-Report-System/branch/master/graph/badge.svg)](https://codecov.io/gh/Eithadarphyu2/Population-Report-System)
+
 [![Release](https://img.shields.io/github/v/release/Eithadarphyu2/Population-Report-System?include_prereleases)](https://github.com/Eithadarphyu2/Population-Report-System/releases)
 
-[![codecov](https://codecov.io/gh/Eithadarphyu2/Population-Report-System/graph/badge.svg?token=KMOULDA7A8)](https://codecov.io/gh/Eithadarphyu2/Population-Report-System)
+[![License](https://img.shields.io/github/license/Eithadarphyu2/Population-Report-System)](LICENSE)
 
 ## Project Overview
 
