@@ -52,7 +52,11 @@ class PopulationReportIntegrationTest {
                 rs -> rs.getLong("NegativeCount")
         );
 
-        assertEquals(0L, negativePopulations.get(0));
+        assertEquals(
+                0L,
+                negativePopulations.get(0),
+                "No country should have a negative population"
+        );
     }
 
     @Test
@@ -68,7 +72,11 @@ class PopulationReportIntegrationTest {
                 rs -> rs.getLong("NegativeCount")
         );
 
-        assertEquals(0L, negativePopulations.get(0));
+        assertEquals(
+                0L,
+                negativePopulations.get(0),
+                "No city should have a negative population"
+        );
     }
 
     @Test
