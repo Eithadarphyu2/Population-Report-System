@@ -1,6 +1,7 @@
 package com.team14.report.population;
 
 import com.team14.input.UserInput;
+import com.team14.report.ReportDisplay.Column;
 import com.team14.report.SqlReport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,10 +33,10 @@ class PopulationReportTest {
                 new Class<?>[]{ResultSet.class},
                 (proxy, method, args) -> {
                     if ("getString".equals(method.getName())) {
-                        return (String) values.get((String) args[0]);
+                        return values.get((String) args[0]);
                     }
                     if ("getLong".equals(method.getName())) {
-                        return (Long) values.get((String) args[0]);
+                        return values.get((String) args[0]);
                     }
                     throw new UnsupportedOperationException(method.getName());
                 });
@@ -190,7 +191,7 @@ class PopulationReportTest {
         void sharedTotalPopulationBehaviour() {
             TotalPopulationReport report = new WorldPopulationReport();
             List<String> headings = report.columns().stream()
-                    .map(column -> column.heading())
+                    .map(Column::heading)
                     .toList();
 
             assertAll(
@@ -395,7 +396,7 @@ class PopulationReportTest {
         void distributionColumns() {
             List<String> headings = new PopulationDistributionByContinentReport()
                     .columns().stream()
-                    .map(column -> column.heading())
+                    .map(Column::heading)
                     .toList();
 
             assertEquals(List.of("Name", "Total Population", "Population in Cities",
