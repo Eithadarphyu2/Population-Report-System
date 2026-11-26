@@ -13,42 +13,74 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Unit tests for {@link LanguagePopulationReport} covering title, SQL clauses,
+ * column definitions, and row formatting without requiring a database.
+ */
 class LanguagePopulationReportTest {
 
     @Test
     @DisplayName("Language report has the correct title")
     void languageReportHasCorrectTitle() {
+        // Instantiate report and verify its display title
         LanguagePopulationReport report =
                 new LanguagePopulationReport();
 
         assertEquals(
                 "Language Population Report",
-                report.title()
+                report.title(),
+                "Expected report title to be 'Language Population Report'"
         );
     }
 
     @Test
     @DisplayName("Language report uses the correct SQL clauses")
     void languageReportUsesCorrectClauses() {
+        // Verify filter, grouping, and ordering clauses in the report SQL
         LanguagePopulationReport report =
                 new LanguagePopulationReport();
 
         String clauses = report.clauses();
 
-        assertTrue(clauses.contains("WHERE cl.Language IN"));
-        assertTrue(clauses.contains("'Chinese'"));
-        assertTrue(clauses.contains("'English'"));
-        assertTrue(clauses.contains("'Hindi'"));
-        assertTrue(clauses.contains("'Spanish'"));
-        assertTrue(clauses.contains("'Arabic'"));
+        assertTrue(
+                clauses.contains("WHERE cl.Language IN"),
+                "Expected SQL clauses to contain WHERE cl.Language IN filter"
+        );
+        assertTrue(
+                clauses.contains("'Chinese'"),
+                "Expected SQL clauses to filter for 'Chinese'"
+        );
+        assertTrue(
+                clauses.contains("'English'"),
+                "Expected SQL clauses to filter for 'English'"
+        );
+        assertTrue(
+                clauses.contains("'Hindi'"),
+                "Expected SQL clauses to filter for 'Hindi'"
+        );
+        assertTrue(
+                clauses.contains("'Spanish'"),
+                "Expected SQL clauses to filter for 'Spanish'"
+        );
+        assertTrue(
+                clauses.contains("'Arabic'"),
+                "Expected SQL clauses to filter for 'Arabic'"
+        );
 
-        assertTrue(clauses.contains("GROUP BY cl.Language"));
-        assertTrue(clauses.contains("ORDER BY Speakers DESC"));
+        assertTrue(
+                clauses.contains("GROUP BY cl.Language"),
+                "Expected SQL clauses to group by language"
+        );
+        assertTrue(
+                clauses.contains("ORDER BY Speakers DESC"),
+                "Expected SQL clauses to order by speakers descending"
+        );
     }
 
     @Test
     @DisplayName("Language report has the correct column headings")
     void languageReportHasCorrectColumns() {
+        // Check column headings and alignment configuration
         LanguagePopulationReport report =
                 new LanguagePopulationReport();
 
@@ -62,12 +94,25 @@ class LanguagePopulationReportTest {
                 ),
                 columns.stream()
                         .map(Column::heading)
-                        .toList()
+                        .toList(),
+                "Expected column headings to match language report specification"
         );
 
-        assertEquals(Alignment.LEFT, columns.get(0).alignment());
-        assertEquals(Alignment.RIGHT, columns.get(1).alignment());
-        assertEquals(Alignment.RIGHT, columns.get(2).alignment());
+        assertEquals(
+                Alignment.LEFT,
+                columns.get(0).alignment(),
+                "Expected Language column to be left-aligned"
+        );
+        assertEquals(
+                Alignment.RIGHT,
+                columns.get(1).alignment(),
+                "Expected Number of Speakers column to be right-aligned"
+        );
+        assertEquals(
+                Alignment.RIGHT,
+                columns.get(2).alignment(),
+                "Expected Percentage of World Population column to be right-aligned"
+        );
     }
 
     @Test
@@ -78,6 +123,7 @@ class LanguagePopulationReportTest {
         LanguagePopulationReport report =
                 new LanguagePopulationReport();
 
+        // Create a dynamic proxy ResultSet returning mock values for a single row
         ResultSet resultSet = (ResultSet) Proxy.newProxyInstance(
                 ResultSet.class.getClassLoader(),
                 new Class<?>[]{ResultSet.class},
@@ -91,9 +137,11 @@ class LanguagePopulationReportTest {
 
         List<?> row = report.readRow(resultSet);
 
+        // Verify percentage is rounded/formatted to two decimal places with '%'
         assertEquals(
                 List.of("English", 123456L, "12.35%"),
-                row
+                row,
+                "Expected row values with percentage formatted to two decimal places"
         );
     }
 }
