@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -25,16 +26,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class AppTest {
 
+    // Preserve the original System.err stream so it can be restored after each test
     private final PrintStream originalErr = System.err;
+
+    // Buffer used to capture error messages written to System.err during tests
     private final ByteArrayOutputStream capturedErr = new ByteArrayOutputStream();
 
     @BeforeEach
     void captureErrors() {
-        System.setErr(new PrintStream(capturedErr));
+        // Explicitly specify UTF-8 with auto-flush enabled so PMD RelianceOnDefaultCharset
+        // is satisfied and error output is immediately flushed to the buffer
+        System.setErr(new PrintStream(capturedErr, true, StandardCharsets.UTF_8));
     }
 
     @AfterEach
     void restoreErrors() {
+        // Restore original System.err to avoid affecting other tests
         System.setErr(originalErr);
     }
 
@@ -79,7 +86,8 @@ class AppTest {
         assertEquals(0, failures);
         assertTrue(first.ran);
         assertTrue(second.ran);
-        assertEquals("", capturedErr.toString());
+        // Decode captured bytes using UTF-8 instead of relying on JVM default charset
+        assertEquals("", capturedErr.toString(StandardCharsets.UTF_8));
     }
 
     @Test
@@ -89,7 +97,9 @@ class AppTest {
         int failures = App.runReports(List.of(new FakeReport("Broken report", true)));
 
         assertEquals(1, failures);
-        assertTrue(capturedErr.toString().contains("Report failed: Broken report - boom"));
+        // Verify the error message in UTF-8 includes both the report title and exception reason
+        assertTrue(capturedErr.toString(StandardCharsets.UTF_8)
+                .contains("Report failed: Broken report - boom"));
     }
 
     @Test
@@ -122,13 +132,15 @@ class AppTest {
     @DisplayName("No reports means no failures")
     void noReportsMeansNoFailures() {
         assertEquals(0, App.runReports(List.of()));
-        assertFalse(capturedErr.toString().contains("Report failed"));
+        // Decode captured bytes using UTF-8 to avoid default-charset warnings and ensure consistency
+        assertFalse(capturedErr.toString(StandardCharsets.UTF_8).contains("Report failed"));
     }
 
     @Test
     @DisplayName("App cannot be instantiated")
     void appCannotBeInstantiated() throws Exception {
 
+        // Access the private constructor via reflection to test utility-class protection
         Constructor<App> constructor = App.class.getDeclaredConstructor();
         constructor.setAccessible(true);
 
