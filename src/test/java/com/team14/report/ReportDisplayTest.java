@@ -10,9 +10,9 @@ import org.junit.jupiter.api.function.Executable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -90,7 +90,11 @@ class ReportDisplayTest {
 
     // Helper asserting that an invalid operation throws IllegalArgumentException
     private static void assertRejected(Executable action) {
-        assertThrows(IllegalArgumentException.class, action);
+        assertThrows(
+                IllegalArgumentException.class,
+                action,
+                "Expected IllegalArgumentException for invalid report input"
+        );
     }
 
     // number formatting
@@ -98,27 +102,48 @@ class ReportDisplayTest {
     @Test
     @DisplayName("Whole numbers get thousands separators")
     void wholeNumbersUseThousandsSeparators() {
-        assertTrue(renderValue(AMOUNT, 1234567L).contains("1,234,567"));
-        assertTrue(renderValue(AMOUNT, 1000).contains("1,000"));
+        // Large and four-digit whole numbers should include comma grouping separators
+        assertTrue(
+                renderValue(AMOUNT, 1234567L).contains("1,234,567"),
+                "Expected thousands separators in '1,234,567'"
+        );
+        assertTrue(
+                renderValue(AMOUNT, 1000).contains("1,000"),
+                "Expected thousands separator in '1,000'"
+        );
     }
 
     @Test
     @DisplayName("Small whole numbers are not changed")
     void smallNumbersAreKept() {
-        assertTrue(renderValue(AMOUNT, 7).contains(" 7 "));
+        // Single-digit numbers should not have thousands separators or decimal places
+        assertTrue(
+                renderValue(AMOUNT, 7).contains(" 7 "),
+                "Expected small number 7 to render without extra formatting"
+        );
     }
 
     @Test
     @DisplayName("Decimal numbers are shown with two decimal places")
     void decimalsUseTwoPlaces() {
-        assertTrue(renderValue(AMOUNT, 1234.5).contains("1,234.50"));
-        assertTrue(renderValue(AMOUNT, 2.5f).contains("2.50"));
+        // Floating-point values should be formatted to 2 decimal places
+        assertTrue(
+                renderValue(AMOUNT, 1234.5).contains("1,234.50"),
+                "Expected decimal '1234.5' to format as '1,234.50'"
+        );
+        assertTrue(
+                renderValue(AMOUNT, 2.5f).contains("2.50"),
+                "Expected float '2.5f' to format as '2.50'"
+        );
     }
 
     @Test
     @DisplayName("Text is shown exactly as given")
     void textIsKept() {
-        assertTrue(renderValue(NAME, "Saint-Denis").contains("Saint-Denis"));
+        assertTrue(
+                renderValue(NAME, "Saint-Denis").contains("Saint-Denis"),
+                "Expected text 'Saint-Denis' to be displayed unchanged"
+        );
     }
 
     // layout
@@ -133,10 +158,10 @@ class ReportDisplayTest {
                 List.of("B", 2)
         );
 
-        assertTrue(output.contains("Test report"));
-        assertTrue(output.contains("Name"));
-        assertTrue(output.contains("Amount"));
-        assertTrue(output.contains("Total records: 2"));
+        assertTrue(output.contains("Test report"), "Expected report title in output");
+        assertTrue(output.contains("Name"), "Expected 'Name' column heading in output");
+        assertTrue(output.contains("Amount"), "Expected 'Amount' column heading in output");
+        assertTrue(output.contains("Total records: 2"), "Expected 'Total records: 2' summary line");
     }
 
     @Test
@@ -145,7 +170,7 @@ class ReportDisplayTest {
 
         String output = render(List.of(NAME, AMOUNT));
 
-        assertTrue(output.contains("Total records: 0"));
+        assertTrue(output.contains("Total records: 0"), "Expected 'Total records: 0' for empty report");
     }
 
     @Test
@@ -157,7 +182,7 @@ class ReportDisplayTest {
                 "Hamilton"
         );
 
-        assertTrue(line.startsWith("| Hamilton "));
+        assertTrue(line.startsWith("| Hamilton "), "Expected left-aligned value to start at left cell boundary");
     }
 
     @Test
@@ -169,8 +194,8 @@ class ReportDisplayTest {
                 "1,200"
         );
 
-        assertTrue(line.endsWith(" 1,200 |"));
-        assertFalse(line.startsWith("| 1,200"));
+        assertTrue(line.endsWith(" 1,200 |"), "Expected right-aligned value to end at right cell boundary");
+        assertFalse(line.startsWith("| 1,200"), "Expected right-aligned value not to sit flush left");
     }
 
     @Test
@@ -193,8 +218,11 @@ class ReportDisplayTest {
         }
 
         // Every rendered table line should have identical character width
-        assertFalse(widths.isEmpty());
-        assertTrue(widths.stream().allMatch(w -> w.equals(widths.get(0))));
+        assertFalse(widths.isEmpty(), "Expected at least one table border or row line");
+        assertTrue(
+                widths.stream().allMatch(w -> w.equals(widths.get(0))),
+                "Expected all table border and row lines to have equal width"
+        );
     }
 
     // validation
@@ -259,9 +287,9 @@ class ReportDisplayTest {
 
         Column population = Column.population();
 
-        assertEquals("Population", population.heading());
-        assertEquals(Alignment.RIGHT, population.alignment());
-        assertTrue(population.zeroIsMissing());
+        assertEquals("Population", population.heading(), "Expected standard population heading to be 'Population'");
+        assertEquals(Alignment.RIGHT, population.alignment(), "Expected standard population column to be right-aligned");
+        assertTrue(population.zeroIsMissing(), "Expected zero population to be treated as missing");
     }
 
     @Test
@@ -275,9 +303,13 @@ class ReportDisplayTest {
 
         InvocationTargetException error = assertThrows(
                 InvocationTargetException.class,
-                constructor::newInstance
+                constructor::newInstance,
+                "Expected private constructor call to throw InvocationTargetException"
         );
 
-        assertTrue(error.getCause() instanceof UnsupportedOperationException);
+        assertTrue(
+                error.getCause() instanceof UnsupportedOperationException,
+                "Expected UnsupportedOperationException as the underlying cause"
+        );
     }
 }
