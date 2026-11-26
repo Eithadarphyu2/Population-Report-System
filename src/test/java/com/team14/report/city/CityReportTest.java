@@ -1,4 +1,3 @@
-
 package com.team14.report.city;
 
 import com.team14.input.UserInput;
@@ -46,9 +45,21 @@ class CityReportTest {
             String clauses,
             Object... parameters) {
 
-        assertEquals(title, report.title());
-        assertEquals(clauses, ReportDefinition.clauses(report));
-        assertArrayEquals(parameters, ReportDefinition.parameters(report));
+        assertEquals(
+                title,
+                report.title(),
+                "Report title should match expected title"
+        );
+        assertEquals(
+                clauses,
+                ReportDefinition.clauses(report),
+                "SQL clauses should match expected clauses"
+        );
+        assertArrayEquals(
+                parameters,
+                ReportDefinition.parameters(report),
+                "SQL parameters should match expected parameters"
+        );
 
         assertEquals(
                 ReportDefinition.placeholders(report),
@@ -98,12 +109,14 @@ class CityReportTest {
     void citiesByContinentRejectsBlank() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CitiesByContinentReport((String) null)
+                () -> new CitiesByContinentReport((String) null),
+                "Null continent should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CitiesByContinentReport("   ")
+                () -> new CitiesByContinentReport("   "),
+                "Blank continent should be rejected"
         );
     }
 
@@ -114,7 +127,8 @@ class CityReportTest {
                 new Object[]{"Africa"},
                 ReportDefinition.parameters(
                         new CitiesByContinentReport(typing("Africa"))
-                )
+                ),
+                "Continent parameter should be read from user input"
         );
     }
 
@@ -123,7 +137,8 @@ class CityReportTest {
     void citiesByContinentRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
-                () -> new CitiesByContinentReport((UserInput) null)
+                () -> new CitiesByContinentReport((UserInput) null),
+                "Null user input should be rejected"
         );
     }
 
@@ -148,7 +163,8 @@ class CityReportTest {
                 new Object[]{"United Kingdom", "United Kingdom"},
                 ReportDefinition.parameters(
                         new CitiesByCountryReport(" United Kingdom ")
-                )
+                ),
+                "Surrounding spaces should be trimmed from the country name"
         );
     }
 
@@ -157,12 +173,14 @@ class CityReportTest {
     void citiesByCountryRejectsBlank() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CitiesByCountryReport((String) null)
+                () -> new CitiesByCountryReport((String) null),
+                "Null country should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CitiesByCountryReport("   ")
+                () -> new CitiesByCountryReport("   "),
+                "Blank country should be rejected"
         );
     }
 
@@ -173,7 +191,8 @@ class CityReportTest {
                 new Object[]{"Japan", "Japan"},
                 ReportDefinition.parameters(
                         new CitiesByCountryReport(typing("Japan"))
-                )
+                ),
+                "Country parameter should be read from user input"
         );
     }
 
@@ -182,7 +201,8 @@ class CityReportTest {
     void citiesByCountryRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
-                () -> new CitiesByCountryReport((UserInput) null)
+                () -> new CitiesByCountryReport((UserInput) null),
+                "Null user input should be rejected"
         );
     }
 
@@ -206,7 +226,8 @@ class CityReportTest {
                 new Object[]{"England"},
                 ReportDefinition.parameters(
                         new CitiesByDistrictReport(" England ")
-                )
+                ),
+                "Surrounding spaces should be trimmed from the district name"
         );
     }
 
@@ -215,12 +236,14 @@ class CityReportTest {
     void citiesByDistrictRejectsBlank() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CitiesByDistrictReport((String) null)
+                () -> new CitiesByDistrictReport((String) null),
+                "Null district should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CitiesByDistrictReport("   ")
+                () -> new CitiesByDistrictReport("   "),
+                "Blank district should be rejected"
         );
     }
 
@@ -231,7 +254,8 @@ class CityReportTest {
                 new Object[]{"Scotland"},
                 ReportDefinition.parameters(
                         new CitiesByDistrictReport(typing("Scotland"))
-                )
+                ),
+                "District parameter should be read from user input"
         );
     }
 
@@ -240,7 +264,8 @@ class CityReportTest {
     void citiesByDistrictRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
-                () -> new CitiesByDistrictReport((UserInput) null)
+                () -> new CitiesByDistrictReport((UserInput) null),
+                "Null user input should be rejected"
         );
     }
 
@@ -264,7 +289,8 @@ class CityReportTest {
                 new Object[]{"Caribbean"},
                 ReportDefinition.parameters(
                         new CitiesByRegionReport(" Caribbean ")
-                )
+                ),
+                "Surrounding spaces should be trimmed from the region name"
         );
     }
 
@@ -273,12 +299,14 @@ class CityReportTest {
     void citiesByRegionRejectsBlank() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CitiesByRegionReport((String) null)
+                () -> new CitiesByRegionReport((String) null),
+                "Null region should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new CitiesByRegionReport("   ")
+                () -> new CitiesByRegionReport("   "),
+                "Blank region should be rejected"
         );
     }
 
@@ -289,7 +317,8 @@ class CityReportTest {
                 new Object[]{"Polynesia"},
                 ReportDefinition.parameters(
                         new CitiesByRegionReport(typing("Polynesia"))
-                )
+                ),
+                "Region parameter should be read from user input"
         );
     }
 
@@ -298,7 +327,8 @@ class CityReportTest {
     void citiesByRegionRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
-                () -> new CitiesByRegionReport((UserInput) null)
+                () -> new CitiesByRegionReport((UserInput) null),
+                "Null user input should be rejected"
         );
     }
 
@@ -320,12 +350,14 @@ class CityReportTest {
     void topCitiesWorldwideRejectsBadN() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByWorldwideReport(0)
+                () -> new TopCitiesByWorldwideReport(0),
+                "Zero limit should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByWorldwideReport(-1)
+                () -> new TopCitiesByWorldwideReport(-1),
+                "Negative limit should be rejected"
         );
     }
 
@@ -336,7 +368,8 @@ class CityReportTest {
                 new Object[]{8},
                 ReportDefinition.parameters(
                         new TopCitiesByWorldwideReport(typing("8"))
-                )
+                ),
+                "Top N limit should be read from user input"
         );
     }
 
@@ -345,7 +378,8 @@ class CityReportTest {
     void topCitiesWorldwideRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
-                () -> new TopCitiesByWorldwideReport((UserInput) null)
+                () -> new TopCitiesByWorldwideReport((UserInput) null),
+                "Null user input should be rejected"
         );
     }
 
@@ -370,7 +404,8 @@ class CityReportTest {
                 new Object[]{"Europe", 3},
                 ReportDefinition.parameters(
                         new TopCitiesByContinentReport(" Europe ", 3)
-                )
+                ),
+                "Surrounding spaces should be trimmed from the continent name"
         );
     }
 
@@ -379,17 +414,20 @@ class CityReportTest {
     void topCitiesByContinentRejectsBadValues() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByContinentReport("  ", 5)
+                () -> new TopCitiesByContinentReport("  ", 5),
+                "Blank continent should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByContinentReport("Asia", 0)
+                () -> new TopCitiesByContinentReport("Asia", 0),
+                "Zero limit should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByContinentReport("Asia", -1)
+                () -> new TopCitiesByContinentReport("Asia", -1),
+                "Negative limit should be rejected"
         );
     }
 
@@ -402,7 +440,8 @@ class CityReportTest {
                         new TopCitiesByContinentReport(
                                 typing("Oceania", "2")
                         )
-                )
+                ),
+                "Continent and top N parameters should be read from user input"
         );
     }
 
@@ -411,7 +450,8 @@ class CityReportTest {
     void topCitiesByContinentRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
-                () -> new TopCitiesByContinentReport((UserInput) null)
+                () -> new TopCitiesByContinentReport((UserInput) null),
+                "Null user input should be rejected"
         );
     }
 
@@ -436,7 +476,8 @@ class CityReportTest {
                 new Object[]{"Japan", 3},
                 ReportDefinition.parameters(
                         new TopCitiesByCountryReport(" Japan ", 3)
-                )
+                ),
+                "Surrounding spaces should be trimmed from the country name"
         );
     }
 
@@ -445,17 +486,20 @@ class CityReportTest {
     void topCitiesByCountryRejectsBadValues() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByCountryReport("  ", 5)
+                () -> new TopCitiesByCountryReport("  ", 5),
+                "Blank country should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByCountryReport("Japan", 0)
+                () -> new TopCitiesByCountryReport("Japan", 0),
+                "Zero limit should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByCountryReport("Japan", -1)
+                () -> new TopCitiesByCountryReport("Japan", -1),
+                "Negative limit should be rejected"
         );
     }
 
@@ -468,7 +512,8 @@ class CityReportTest {
                         new TopCitiesByCountryReport(
                                 typing("Japan", "4")
                         )
-                )
+                ),
+                "Country and top N parameters should be read from user input"
         );
     }
 
@@ -477,7 +522,8 @@ class CityReportTest {
     void topCitiesByCountryRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
-                () -> new TopCitiesByCountryReport((UserInput) null)
+                () -> new TopCitiesByCountryReport((UserInput) null),
+                "Null user input should be rejected"
         );
     }
 
@@ -502,7 +548,8 @@ class CityReportTest {
                 new Object[]{"Scotland", 3},
                 ReportDefinition.parameters(
                         new TopCitiesByDistrictReport(" Scotland ", 3)
-                )
+                ),
+                "Surrounding spaces should be trimmed from the district name"
         );
     }
 
@@ -511,17 +558,20 @@ class CityReportTest {
     void topCitiesByDistrictRejectsBadValues() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByDistrictReport("  ", 5)
+                () -> new TopCitiesByDistrictReport("  ", 5),
+                "Blank district should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByDistrictReport("England", 0)
+                () -> new TopCitiesByDistrictReport("England", 0),
+                "Zero limit should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByDistrictReport("England", -1)
+                () -> new TopCitiesByDistrictReport("England", -1),
+                "Negative limit should be rejected"
         );
     }
 
@@ -534,7 +584,8 @@ class CityReportTest {
                         new TopCitiesByDistrictReport(
                                 typing("Scotland", "2")
                         )
-                )
+                ),
+                "District and top N parameters should be read from user input"
         );
     }
 
@@ -543,7 +594,8 @@ class CityReportTest {
     void topCitiesByDistrictRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
-                () -> new TopCitiesByDistrictReport((UserInput) null)
+                () -> new TopCitiesByDistrictReport((UserInput) null),
+                "Null user input should be rejected"
         );
     }
 
@@ -568,7 +620,8 @@ class CityReportTest {
                 new Object[]{"Caribbean", 4},
                 ReportDefinition.parameters(
                         new TopCitiesByRegionReport(" Caribbean ", 4)
-                )
+                ),
+                "Surrounding spaces should be trimmed from the region name"
         );
     }
 
@@ -577,17 +630,20 @@ class CityReportTest {
     void topCitiesByRegionRejectsBadValues() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByRegionReport("  ", 5)
+                () -> new TopCitiesByRegionReport("  ", 5),
+                "Blank region should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByRegionReport("Caribbean", 0)
+                () -> new TopCitiesByRegionReport("Caribbean", 0),
+                "Zero limit should be rejected"
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new TopCitiesByRegionReport("Caribbean", -1)
+                () -> new TopCitiesByRegionReport("Caribbean", -1),
+                "Negative limit should be rejected"
         );
     }
 
@@ -600,7 +656,8 @@ class CityReportTest {
                         new TopCitiesByRegionReport(
                                 typing("Melanesia", "6")
                         )
-                )
+                ),
+                "Region and top N parameters should be read from user input"
         );
     }
 
@@ -609,7 +666,8 @@ class CityReportTest {
     void topCitiesByRegionRejectsNullInput() {
         assertThrows(
                 NullPointerException.class,
-                () -> new TopCitiesByRegionReport((UserInput) null)
+                () -> new TopCitiesByRegionReport((UserInput) null),
+                "Null user input should be rejected"
         );
     }
 
@@ -624,11 +682,19 @@ class CityReportTest {
 
         assertEquals(
                 List.of("Name", "Country", "District", "Population"),
-                columns.stream().map(Column::heading).toList()
+                columns.stream().map(Column::heading).toList(),
+                "City report should include Name, Country, District, and Population columns"
         );
 
-        assertEquals(Alignment.RIGHT, columns.get(3).alignment());
-        assertTrue(columns.get(3).zeroIsMissing());
+        assertEquals(
+                Alignment.RIGHT,
+                columns.get(3).alignment(),
+                "Population column should be right-aligned"
+        );
+        assertTrue(
+                columns.get(3).zeroIsMissing(),
+                "Population column should treat zero as missing"
+        );
     }
 
     @Test
@@ -641,15 +707,23 @@ class CityReportTest {
         assertTrue(
                 select.startsWith(
                         "SELECT ci.Name, c.Name AS Country,"
-                )
+                ),
+                "SQL query should select city name and country name"
         );
 
-        assertTrue(select.contains("ci.District, ci.Population"));
-        assertTrue(select.contains("FROM city ci"));
+        assertTrue(
+                select.contains("ci.District, ci.Population"),
+                "SQL query should select city district and population"
+        );
+        assertTrue(
+                select.contains("FROM city ci"),
+                "SQL query should select from the city table"
+        );
         assertTrue(
                 select.contains(
                         "JOIN country c ON ci.CountryCode = c.Code"
-                )
+                ),
+                "SQL query should join the country table on country code"
         );
     }
 
@@ -674,7 +748,8 @@ class CityReportTest {
                 ReportDefinition.readRow(
                         new AllCitiesInWorldReport(),
                         row
-                )
+                ),
+                "Row values should match city name, country name, district, and population"
         );
     }
 
@@ -699,7 +774,8 @@ class CityReportTest {
                 ReportDefinition.readRow(
                         new AllCitiesInWorldReport(),
                         row
-                )
+                ),
+                "Row values should preserve null district alongside city name, country, and population"
         );
     }
 }
