@@ -56,7 +56,8 @@ class DatabaseConnectionIntegrationTest {
 
         try (Connection connection = DatabaseConnection.getConnection()) {
 
-            assertEquals("world", connection.getCatalog());
+            // Confirm the active catalog/database is 'world'
+            assertEquals("world", connection.getCatalog(), "Expected connection catalog to be 'world'");
         }
     }
 
@@ -66,8 +67,9 @@ class DatabaseConnectionIntegrationTest {
 
         try (Connection connection = DatabaseConnection.getConnection()) {
 
-            assertEquals(239, countRows(connection, "country"));
-            assertEquals(4079, countRows(connection, "city"));
+            // Verify standard world dataset row counts
+            assertEquals(239, countRows(connection, "country"), "Expected 239 rows in country table");
+            assertEquals(4079, countRows(connection, "city"), "Expected 4079 rows in city table");
         }
     }
 
@@ -78,9 +80,10 @@ class DatabaseConnectionIntegrationTest {
         try (Connection first = DatabaseConnection.getConnection();
              Connection second = DatabaseConnection.getConnection()) {
 
-            assertNotSame(first, second);
-            assertTrue(first.isValid(2));
-            assertTrue(second.isValid(2));
+            // Ensure two separate Connection instances are returned and both are valid
+            assertNotSame(first, second, "Expected each call to return a distinct Connection instance");
+            assertTrue(first.isValid(2), "First connection should be active");
+            assertTrue(second.isValid(2), "Second connection should be active");
         }
     }
 
@@ -92,6 +95,6 @@ class DatabaseConnectionIntegrationTest {
 
         connection.close();
 
-        assertTrue(connection.isClosed());
+        assertTrue(connection.isClosed(), "Connection should be closed after calling close()");
     }
 }
