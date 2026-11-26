@@ -118,6 +118,7 @@ public final class ReportDisplay {
      */
     public static void displayReport(String title, List<Column> columns, List<List<?>> rows) {
 
+        // Validate inputs before formatting or printing anything
         validateReport(title, columns, rows);
 
         List<List<String>> formattedRows = formatRows(rows, columns);
@@ -126,16 +127,19 @@ public final class ReportDisplay {
 
         printTitle(title);
 
+        // Top border above column headings
         printSeparator(columnWidths);
 
         printRow(getHeadings(columns), columnWidths, columns);
 
+        // Divider between headings and data rows
         printSeparator(columnWidths);
 
         for (List<String> row : formattedRows) {
             printRow(row, columnWidths, columns);
         }
 
+        // Bottom border closing the table
         printSeparator(columnWidths);
 
         System.out.println("Total records: " + formattedRows.size());
@@ -209,6 +213,7 @@ public final class ReportDisplay {
             return hasNoContent(text);
         }
 
+        // Only treat 0 as missing when explicitly enabled on the column (e.g., Population)
         return column.zeroIsMissing() && value instanceof Number number && number.doubleValue() == 0;
     }
 
@@ -264,11 +269,13 @@ public final class ReportDisplay {
 
         int[] widths = new int[columns.size()];
 
+        // Start each column at least wide enough for its heading and minimum width
         for (int i = 0; i < columns.size(); i++) {
 
             widths[i] = Math.max(MIN_COLUMN_WIDTH, columns.get(i).heading().length());
         }
 
+        // Expand column widths to fit the widest formatted value in each column
         for (List<String> row : formattedRows) {
 
             for (int i = 0; i < row.size() && i < widths.length; i++) {
@@ -298,12 +305,13 @@ public final class ReportDisplay {
      *
      * @param widths column widths
      */
-    private static void printSeparator(int[] widths) {
+    private static void printSeparator(int... widths) {
 
         StringBuilder separator = new StringBuilder();
 
         separator.append(BORDER_CORNER);
 
+        // Account for left and right cell padding around each column's content
         for (int width : widths) {
 
             separator.append(BORDER_HORIZONTAL.repeat(width + (CELL_PADDING * 2)));
