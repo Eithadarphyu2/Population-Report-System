@@ -83,11 +83,11 @@ class AppTest {
 
         int failures = App.runReports(List.of(first, second));
 
-        assertEquals(0, failures);
-        assertTrue(first.ran);
-        assertTrue(second.ran);
+        assertEquals(0, failures, "Expected no failures when all reports succeed");
+        assertTrue(first.ran, "Expected first report to be executed");
+        assertTrue(second.ran, "Expected second report to be executed");
         // Decode captured bytes using UTF-8 instead of relying on JVM default charset
-        assertEquals("", capturedErr.toString(StandardCharsets.UTF_8));
+        assertEquals("", capturedErr.toString(StandardCharsets.UTF_8), "Expected no error output");
     }
 
     @Test
@@ -96,10 +96,13 @@ class AppTest {
 
         int failures = App.runReports(List.of(new FakeReport("Broken report", true)));
 
-        assertEquals(1, failures);
+        assertEquals(1, failures, "Expected one failure for a single failing report");
         // Verify the error message in UTF-8 includes both the report title and exception reason
-        assertTrue(capturedErr.toString(StandardCharsets.UTF_8)
-                .contains("Report failed: Broken report - boom"));
+        assertTrue(
+                capturedErr.toString(StandardCharsets.UTF_8)
+                        .contains("Report failed: Broken report - boom"),
+                "Expected error output to include report title and failure reason"
+        );
     }
 
     @Test
@@ -111,8 +114,8 @@ class AppTest {
 
         int failures = App.runReports(List.of(broken, after));
 
-        assertEquals(1, failures);
-        assertTrue(after.ran);
+        assertEquals(1, failures, "Expected only the broken report to count as a failure");
+        assertTrue(after.ran, "Expected subsequent report to still run after a failure");
     }
 
     @Test
@@ -125,15 +128,18 @@ class AppTest {
                 new FakeReport("Three", true)
         ));
 
-        assertEquals(2, failures);
+        assertEquals(2, failures, "Expected two failures out of three reports");
     }
 
     @Test
     @DisplayName("No reports means no failures")
     void noReportsMeansNoFailures() {
-        assertEquals(0, App.runReports(List.of()));
+        assertEquals(0, App.runReports(List.of()), "Expected zero failures for an empty report list");
         // Decode captured bytes using UTF-8 to avoid default-charset warnings and ensure consistency
-        assertFalse(capturedErr.toString(StandardCharsets.UTF_8).contains("Report failed"));
+        assertFalse(
+                capturedErr.toString(StandardCharsets.UTF_8).contains("Report failed"),
+                "Expected no failure message when no reports are run"
+        );
     }
 
     @Test
@@ -146,9 +152,13 @@ class AppTest {
 
         InvocationTargetException error = assertThrows(
                 InvocationTargetException.class,
-                constructor::newInstance
+                constructor::newInstance,
+                "Expected constructor invocation to fail with InvocationTargetException"
         );
 
-        assertTrue(error.getCause() instanceof UnsupportedOperationException);
+        assertTrue(
+                error.getCause() instanceof UnsupportedOperationException,
+                "Expected UnsupportedOperationException as the underlying cause"
+        );
     }
 }
