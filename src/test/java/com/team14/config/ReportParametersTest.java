@@ -21,9 +21,11 @@ class ReportParametersTest {
     @Test
     @DisplayName("TOP_N is accepted as a positive number")
     void topNIsValid() {
+        // Verify TOP_N passes positive-number validation unchanged
         assertEquals(
                 ReportParameters.TOP_N,
-                Validation.requirePositive(ReportParameters.TOP_N, "N")
+                Validation.requirePositive(ReportParameters.TOP_N, "N"),
+                "Expected TOP_N to be a valid positive number"
         );
     }
 
@@ -31,6 +33,7 @@ class ReportParametersTest {
     @DisplayName("Every text value is accepted and has no extra spaces")
     void textValuesAreValid() {
 
+        // Check all configured filter parameters used by report constructors
         String[] values = {
                 ReportParameters.CONTINENT,
                 ReportParameters.REGION,
@@ -40,7 +43,11 @@ class ReportParametersTest {
         };
 
         for (String value : values) {
-            assertEquals(value, Validation.requireText(value, "Value"));
+            assertEquals(
+                    value,
+                    Validation.requireText(value, "Value"),
+                    "Expected valid non-blank text without extra spaces for: " + value
+            );
         }
     }
 
@@ -48,15 +55,20 @@ class ReportParametersTest {
     @DisplayName("ReportParameters cannot be instantiated")
     void utilityClassCannotBeInstantiated() throws Exception {
 
+        // Access the private constructor via reflection to ensure utility-class protection
         Constructor<ReportParameters> constructor =
                 ReportParameters.class.getDeclaredConstructor();
         constructor.setAccessible(true);
 
         InvocationTargetException error = assertThrows(
                 InvocationTargetException.class,
-                constructor::newInstance
+                constructor::newInstance,
+                "Expected instantiation of ReportParameters to throw InvocationTargetException"
         );
 
-        assertTrue(error.getCause() instanceof UnsupportedOperationException);
+        assertTrue(
+                error.getCause() instanceof UnsupportedOperationException,
+                "Expected UnsupportedOperationException as the underlying cause"
+        );
     }
 }
