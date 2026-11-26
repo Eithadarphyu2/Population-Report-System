@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -34,16 +35,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class CountryReportTest {
 
+    // Default SQL ordering clause for country population reports
     private static final String BY_POPULATION = "ORDER BY c.Population DESC";
 
+    // Save original System.out so it can be restored after each test
     private final PrintStream originalOut = System.out;
+
+    // Buffer to capture console output written to System.out
     private final ByteArrayOutputStream captured = new ByteArrayOutputStream();
 
+    /**
+     * Redirects System.out to a UTF-8 PrintStream with auto-flush before each test.
+     */
     @BeforeEach
     void captureOutput() {
-        System.setOut(new PrintStream(captured));
+        System.setOut(new PrintStream(captured, true, StandardCharsets.UTF_8));
     }
 
+    /**
+     * Restores the original System.out after each test.
+     */
     @AfterEach
     void restoreOutput() {
         System.setOut(originalOut);
@@ -51,7 +62,10 @@ class CountryReportTest {
 
     // ---------------------------------------------------------------- helpers
 
-    /** A UserInput that reads the given lines instead of the keyboard. */
+    /**
+     * Creates a UserInput backed by a Scanner reading the given simulated lines
+     * instead of real keyboard input.
+     */
     private static UserInput typing(String... lines) {
         return new UserInput(new Scanner(String.join("\n", lines) + "\n"));
     }
@@ -100,6 +114,7 @@ class CountryReportTest {
     @Test
     @DisplayName("Countries in a continent: spaces around the continent are removed")
     void countriesByContinentTrims() {
+        // Leading and trailing whitespace around continent names should be trimmed
         assertDefinition(
                 new CountriesByContinentReport("  Asia "),
                 "Countries in Asia by Population",
@@ -196,6 +211,7 @@ class CountryReportTest {
     @Test
     @DisplayName("Top N countries worldwide: N must be greater than 0")
     void topCountriesWorldwideRejectsBadN() {
+        // N must be positive; zero or negative values should be rejected
         assertThrows(IllegalArgumentException.class,
                 () -> new TopCountriesWorldwideReport(0));
         assertThrows(IllegalArgumentException.class,
@@ -361,6 +377,7 @@ class CountryReportTest {
     @DisplayName("A country with no capital is read with an empty capital")
     void readsCountryWithoutCapital() throws SQLException {
 
+        // Antarctica has population 0 and no capital city (null)
         ResultSet row = FakeResultSet.row(
                 "Code", "ATA", "Name", "Antarctica", "Continent", "Antarctica",
                 "Region", "Antarctica", "Population", 0L, "Capital", null);
