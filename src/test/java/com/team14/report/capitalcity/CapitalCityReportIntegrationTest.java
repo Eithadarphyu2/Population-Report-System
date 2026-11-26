@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CapitalCityReportIntegrationTest {
@@ -30,7 +31,10 @@ class CapitalCityReportIntegrationTest {
 
         List<String> populations = output.column("Population");
 
-        assertTrue(populations.size() > 0);
+        assertFalse(
+                populations.isEmpty(),
+                "All capital cities report should return at least one row"
+        );
 
         for (int i = 1; i < populations.size(); i++) {
             assertTrue(
@@ -50,7 +54,11 @@ class CapitalCityReportIntegrationTest {
         ReportOutput output =
                 run(new TopCapitalCitiesWorldwideReport(topN));
 
-        assertEquals(topN, output.totalRecords());
+        assertEquals(
+                topN,
+                output.totalRecords(),
+                "Top N capital cities worldwide should return exactly N rows"
+        );
     }
 
     @Test
@@ -82,7 +90,11 @@ class CapitalCityReportIntegrationTest {
                 new TopCapitalCitiesByContinentReport("Europe", topN)
         );
 
-        assertEquals(topN, output.totalRecords());
+        assertEquals(
+                topN,
+                output.totalRecords(),
+                "Top N capital cities in Europe should return exactly N rows"
+        );
     }
 
     @Test
@@ -98,6 +110,10 @@ class CapitalCityReportIntegrationTest {
                 )
         );
 
-        assertEquals(topN, output.totalRecords());
+        assertEquals(
+                topN,
+                output.totalRecords(),
+                "Top N capital cities in Southern Europe should return exactly N rows"
+        );
     }
 }
