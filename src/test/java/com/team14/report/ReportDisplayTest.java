@@ -10,6 +10,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -29,17 +30,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ReportDisplayTest {
 
+    // Sample left-aligned text column and right-aligned numeric column
     private static final Column NAME = new Column("Name", Alignment.LEFT);
     private static final Column AMOUNT = new Column("Amount", Alignment.RIGHT);
 
+    // Save original System.out so it can be restored after each test
     private final PrintStream originalOut = System.out;
+
+    // Buffer to capture console output written to System.out
     private final ByteArrayOutputStream captured = new ByteArrayOutputStream();
 
+    /**
+     * Redirects System.out to a UTF-8 PrintStream with auto-flush before each test.
+     */
     @BeforeEach
     void captureOutput() {
-        System.setOut(new PrintStream(captured));
+        System.setOut(new PrintStream(captured, true, StandardCharsets.UTF_8));
     }
 
+    /**
+     * Restores the original System.out after each test.
+     */
     @AfterEach
     void restoreOutput() {
         System.setOut(originalOut);
@@ -48,14 +59,15 @@ class ReportDisplayTest {
     // helpers
 
     /**
-     * Displays a report and returns everything that was printed.
+     * Clears previous output, displays a report, and returns everything
+     * that was printed decoded explicitly as UTF-8.
      */
     private String render(List<Column> columns, List<?>... rows) {
         captured.reset();
 
         ReportDisplay.displayReport("Test report", columns, List.of(rows));
 
-        return captured.toString();
+        return captured.toString(StandardCharsets.UTF_8);
     }
 
     /**
@@ -76,6 +88,7 @@ class ReportDisplayTest {
                         "No line contains '" + text + "'"));
     }
 
+    // Helper asserting that an invalid operation throws IllegalArgumentException
     private static void assertRejected(Executable action) {
         assertThrows(IllegalArgumentException.class, action);
     }
@@ -172,12 +185,14 @@ class ReportDisplayTest {
 
         List<Integer> widths = new ArrayList<>();
 
+        // Collect lengths of all table border and row lines
         for (String line : output.split("\\R")) {
             if (line.startsWith("|") || line.startsWith("+")) {
                 widths.add(line.length());
             }
         }
 
+        // Every rendered table line should have identical character width
         assertFalse(widths.isEmpty());
         assertTrue(widths.stream().allMatch(w -> w.equals(widths.get(0))));
     }
@@ -253,6 +268,7 @@ class ReportDisplayTest {
     @DisplayName("ReportDisplay cannot be instantiated")
     void utilityClassCannotBeInstantiated() throws Exception {
 
+        // Access private constructor via reflection to verify utility class guard
         Constructor<ReportDisplay> constructor =
                 ReportDisplay.class.getDeclaredConstructor();
         constructor.setAccessible(true);
