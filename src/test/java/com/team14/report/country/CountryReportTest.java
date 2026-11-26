@@ -78,10 +78,13 @@ class CountryReportTest {
                                          String title,
                                          String clauses,
                                          Object... parameters) {
-
-        assertEquals(title, report.title());
-        assertEquals(clauses, ReportDefinition.clauses(report));
-        assertArrayEquals(parameters, ReportDefinition.parameters(report));
+        // Verify report title, SQL clauses, bound parameters, and placeholder count
+        assertEquals(title, report.title(),
+                "Unexpected report title");
+        assertEquals(clauses, ReportDefinition.clauses(report),
+                "Unexpected SQL clauses");
+        assertArrayEquals(parameters, ReportDefinition.parameters(report),
+                "Unexpected SQL query parameters");
         assertEquals(ReportDefinition.placeholders(report), parameters.length,
                 "Every ? in the SQL needs one parameter");
     }
@@ -91,6 +94,7 @@ class CountryReportTest {
     @Test
     @DisplayName("All countries in the world: sorted by population, no parameters")
     void allCountriesInWorld() {
+        // Verify default world country report has no filter/limit parameters
         assertDefinition(
                 new AllCountriesInWorldReport(),
                 "All Countries in the World by Population",
@@ -103,6 +107,7 @@ class CountryReportTest {
     @Test
     @DisplayName("Countries in a continent: title, SQL and parameter")
     void countriesByContinent() {
+        // Verify continent filter clause and single continent parameter
         assertDefinition(
                 new CountriesByContinentReport("Europe"),
                 "Countries in Europe by Population",
@@ -126,6 +131,7 @@ class CountryReportTest {
     @Test
     @DisplayName("Countries in a continent: a null or blank continent is rejected")
     void countriesByContinentRejectsBlank() {
+        // Reject null and whitespace-only continent inputs
         assertThrows(IllegalArgumentException.class,
                 () -> new CountriesByContinentReport((String) null));
         assertThrows(IllegalArgumentException.class,
@@ -135,15 +141,18 @@ class CountryReportTest {
     @Test
     @DisplayName("Countries in a continent: the continent can be read from user input")
     void countriesByContinentFromInput() {
+        // Simulate typing a continent name via UserInput
         assertArrayEquals(
                 new Object[]{"Africa"},
-                ReportDefinition.parameters(new CountriesByContinentReport(typing("Africa")))
+                ReportDefinition.parameters(new CountriesByContinentReport(typing("Africa"))),
+                "Expected continent parameter read from UserInput to be Africa"
         );
     }
 
     @Test
     @DisplayName("Countries in a continent: null user input is rejected")
     void countriesByContinentRejectsNullInput() {
+        // Null UserInput should throw NullPointerException
         assertThrows(NullPointerException.class,
                 () -> new CountriesByContinentReport((UserInput) null));
     }
@@ -153,6 +162,7 @@ class CountryReportTest {
     @Test
     @DisplayName("Countries in a region: title, SQL and parameter")
     void countriesByRegion() {
+        // Verify region filter clause and single region parameter
         assertDefinition(
                 new CountriesByRegionReport("Southern Europe"),
                 "Countries in Southern Europe by Population",
@@ -164,15 +174,18 @@ class CountryReportTest {
     @Test
     @DisplayName("Countries in a region: spaces around the region are removed")
     void countriesByRegionTrims() {
+        // Ensure padded region name is trimmed to "Caribbean"
         assertArrayEquals(
                 new Object[]{"Caribbean"},
-                ReportDefinition.parameters(new CountriesByRegionReport("  Caribbean "))
+                ReportDefinition.parameters(new CountriesByRegionReport("  Caribbean ")),
+                "Expected trimmed region parameter to be Caribbean"
         );
     }
 
     @Test
     @DisplayName("Countries in a region: a null or blank region is rejected")
     void countriesByRegionRejectsBlank() {
+        // Reject null and empty region names
         assertThrows(IllegalArgumentException.class,
                 () -> new CountriesByRegionReport((String) null));
         assertThrows(IllegalArgumentException.class,
@@ -182,15 +195,18 @@ class CountryReportTest {
     @Test
     @DisplayName("Countries in a region: the region can be read from user input")
     void countriesByRegionFromInput() {
+        // Simulate reading a region from UserInput
         assertArrayEquals(
                 new Object[]{"Polynesia"},
-                ReportDefinition.parameters(new CountriesByRegionReport(typing("Polynesia")))
+                ReportDefinition.parameters(new CountriesByRegionReport(typing("Polynesia"))),
+                "Expected region parameter read from UserInput to be Polynesia"
         );
     }
 
     @Test
     @DisplayName("Countries in a region: null user input is rejected")
     void countriesByRegionRejectsNullInput() {
+        // Null UserInput should throw NullPointerException
         assertThrows(NullPointerException.class,
                 () -> new CountriesByRegionReport((UserInput) null));
     }
@@ -200,6 +216,7 @@ class CountryReportTest {
     @Test
     @DisplayName("Top N countries worldwide: title, SQL and parameter")
     void topCountriesWorldwide() {
+        // Verify LIMIT clause and top-N integer parameter
         assertDefinition(
                 new TopCountriesWorldwideReport(5),
                 "Top 5 Populated Countries Worldwide",
@@ -221,15 +238,18 @@ class CountryReportTest {
     @Test
     @DisplayName("Top N countries worldwide: N can be read from user input")
     void topCountriesWorldwideFromInput() {
+        // Simulate typing limit N via UserInput
         assertArrayEquals(
                 new Object[]{8},
-                ReportDefinition.parameters(new TopCountriesWorldwideReport(typing("8")))
+                ReportDefinition.parameters(new TopCountriesWorldwideReport(typing("8"))),
+                "Expected limit parameter read from UserInput to be 8"
         );
     }
 
     @Test
     @DisplayName("Top N countries worldwide: null user input is rejected")
     void topCountriesWorldwideRejectsNullInput() {
+        // Null UserInput should throw NullPointerException
         assertThrows(NullPointerException.class,
                 () -> new TopCountriesWorldwideReport((UserInput) null));
     }
@@ -239,6 +259,7 @@ class CountryReportTest {
     @Test
     @DisplayName("Top N countries in a continent: title, SQL and parameters")
     void topCountriesByContinent() {
+        // Verify continent filter, population sort, LIMIT clause, and both parameters
         assertDefinition(
                 new TopCountriesByContinentReport("Asia", 5),
                 "Top 5 Populated Countries in Asia",
@@ -250,15 +271,18 @@ class CountryReportTest {
     @Test
     @DisplayName("Top N countries in a continent: spaces are removed from the continent")
     void topCountriesByContinentTrims() {
+        // Verify continent input is trimmed while preserving limit N
         assertArrayEquals(
                 new Object[]{"Europe", 3},
-                ReportDefinition.parameters(new TopCountriesByContinentReport(" Europe ", 3))
+                ReportDefinition.parameters(new TopCountriesByContinentReport(" Europe ", 3)),
+                "Expected trimmed continent 'Europe' and limit 3"
         );
     }
 
     @Test
     @DisplayName("Top N countries in a continent: a blank continent or a bad N is rejected")
     void topCountriesByContinentRejectsBadValues() {
+        // Reject blank continent or non-positive limit N
         assertThrows(IllegalArgumentException.class,
                 () -> new TopCountriesByContinentReport("  ", 5));
         assertThrows(IllegalArgumentException.class,
@@ -268,16 +292,19 @@ class CountryReportTest {
     @Test
     @DisplayName("Top N countries in a continent: the continent and N are read from user input")
     void topCountriesByContinentFromInput() {
+        // Simulate reading continent and N on separate input lines
         assertArrayEquals(
                 new Object[]{"Oceania", 2},
                 ReportDefinition.parameters(
-                        new TopCountriesByContinentReport(typing("Oceania", "2")))
+                        new TopCountriesByContinentReport(typing("Oceania", "2"))),
+                "Expected continent 'Oceania' and limit 2 from UserInput"
         );
     }
 
     @Test
     @DisplayName("Top N countries in a continent: null user input is rejected")
     void topCountriesByContinentRejectsNullInput() {
+        // Null UserInput should throw NullPointerException
         assertThrows(NullPointerException.class,
                 () -> new TopCountriesByContinentReport((UserInput) null));
     }
@@ -287,6 +314,7 @@ class CountryReportTest {
     @Test
     @DisplayName("Top N countries in a region: title, SQL and parameters")
     void topCountriesByRegion() {
+        // Verify region filter, population sort, LIMIT clause, and both parameters
         assertDefinition(
                 new TopCountriesByRegionReport("Southern Europe", 3),
                 "Top 3 Populated Countries in Southern Europe",
@@ -298,15 +326,18 @@ class CountryReportTest {
     @Test
     @DisplayName("Top N countries in a region: spaces are removed from the region")
     void topCountriesByRegionTrims() {
+        // Verify region input is trimmed while preserving limit N
         assertArrayEquals(
                 new Object[]{"Caribbean", 4},
-                ReportDefinition.parameters(new TopCountriesByRegionReport(" Caribbean ", 4))
+                ReportDefinition.parameters(new TopCountriesByRegionReport(" Caribbean ", 4)),
+                "Expected trimmed region 'Caribbean' and limit 4"
         );
     }
 
     @Test
     @DisplayName("Top N countries in a region: a blank region or a bad N is rejected")
     void topCountriesByRegionRejectsBadValues() {
+        // Reject empty region or negative limit N
         assertThrows(IllegalArgumentException.class,
                 () -> new TopCountriesByRegionReport("", 5));
         assertThrows(IllegalArgumentException.class,
@@ -316,16 +347,19 @@ class CountryReportTest {
     @Test
     @DisplayName("Top N countries in a region: the region and N are read from user input")
     void topCountriesByRegionFromInput() {
+        // Simulate reading region and N from UserInput
         assertArrayEquals(
                 new Object[]{"Melanesia", 6},
                 ReportDefinition.parameters(
-                        new TopCountriesByRegionReport(typing("Melanesia", "6")))
+                        new TopCountriesByRegionReport(typing("Melanesia", "6"))),
+                "Expected region 'Melanesia' and limit 6 from UserInput"
         );
     }
 
     @Test
     @DisplayName("Top N countries in a region: null user input is rejected")
     void topCountriesByRegionRejectsNullInput() {
+        // Null UserInput should throw NullPointerException
         assertThrows(NullPointerException.class,
                 () -> new TopCountriesByRegionReport((UserInput) null));
     }
@@ -335,56 +369,66 @@ class CountryReportTest {
     @Test
     @DisplayName("Country reports show the columns the coursework requires")
     void countryColumns() {
-
+        // Retrieve column definitions and check headings, alignment, and zero-as-missing flag
         List<Column> columns = ReportDefinition.columns(new AllCountriesInWorldReport());
 
         assertEquals(
                 List.of("Code", "Name", "Continent", "Region", "Population", "Capital"),
-                columns.stream().map(Column::heading).toList()
+                columns.stream().map(Column::heading).toList(),
+                "Country report headings do not match coursework specification"
         );
-        assertEquals(Alignment.RIGHT, columns.get(4).alignment());
-        assertTrue(columns.get(4).zeroIsMissing());
+        assertEquals(Alignment.RIGHT, columns.get(4).alignment(),
+                "Population column (index 4) should be right-aligned");
+        assertTrue(columns.get(4).zeroIsMissing(),
+                "Population column (index 4) should treat zero as missing");
     }
 
     @Test
     @DisplayName("Country reports select from country and join the capital city")
     void countrySelect() {
-
+        // Verify SELECT clause, capital city LEFT JOIN, and FROM country table
         String select = ReportDefinition.select(new AllCountriesInWorldReport());
 
-        assertTrue(select.startsWith("SELECT c.Code, c.Name, c.Continent, c.Region,"));
-        assertTrue(select.contains("c.Population, ci.Name AS Capital"));
-        assertTrue(select.contains("FROM country c"));
-        assertTrue(select.contains("LEFT JOIN city ci ON c.Capital = ci.ID"));
+        assertTrue(select.startsWith("SELECT c.Code, c.Name, c.Continent, c.Region,"),
+                "Expected SELECT clause to start with Code, Name, Continent, and Region");
+        assertTrue(select.contains("c.Population, ci.Name AS Capital"),
+                "Expected SELECT clause to include Population and Capital alias");
+        assertTrue(select.contains("FROM country c"),
+                "Expected SELECT clause to query FROM country c");
+        assertTrue(select.contains("LEFT JOIN city ci ON c.Capital = ci.ID"),
+                "Expected SELECT clause to left-join city table on capital ID");
     }
 
     @Test
     @DisplayName("A country row is read into the six report values")
     void readsCountryRow() throws SQLException {
-
+        // Build a fake ResultSet row representing China
         ResultSet row = FakeResultSet.row(
                 "Code", "CHN", "Name", "China", "Continent", "Asia",
                 "Region", "Eastern Asia", "Population", 1277558000L,
                 "Capital", "Peking");
 
+        // Verify all six values are extracted in order
         assertEquals(
                 List.of("CHN", "China", "Asia", "Eastern Asia", 1277558000L, "Peking"),
-                ReportDefinition.readRow(new AllCountriesInWorldReport(), row)
+                ReportDefinition.readRow(new AllCountriesInWorldReport(), row),
+                "Expected row values for China to match"
         );
     }
 
     @Test
     @DisplayName("A country with no capital is read with an empty capital")
     void readsCountryWithoutCapital() throws SQLException {
-
         // Antarctica has population 0 and no capital city (null)
         ResultSet row = FakeResultSet.row(
                 "Code", "ATA", "Name", "Antarctica", "Continent", "Antarctica",
                 "Region", "Antarctica", "Population", 0L, "Capital", null);
 
+        // Verify null capital is preserved when reading the row
         assertEquals(
                 Arrays.asList("ATA", "Antarctica", "Antarctica", "Antarctica", 0L, null),
-                ReportDefinition.readRow(new AllCountriesInWorldReport(), row)
+                ReportDefinition.readRow(new AllCountriesInWorldReport(), row),
+                "Expected Antarctica row to have population 0 and null capital"
         );
     }
 }
