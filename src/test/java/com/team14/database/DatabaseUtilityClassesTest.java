@@ -23,9 +23,16 @@ class DatabaseUtilityClassesTest {
         Constructor<?> constructor = type.getDeclaredConstructor();
         constructor.setAccessible(true);
 
-        InvocationTargetException error = assertThrows(InvocationTargetException.class, constructor::newInstance);
+        InvocationTargetException error = assertThrows(
+                InvocationTargetException.class,
+                constructor::newInstance,
+                type.getSimpleName() + " constructor should throw when invoked via reflection"
+        );
 
-        assertTrue(error.getCause() instanceof UnsupportedOperationException);
+        assertTrue(
+                error.getCause() instanceof UnsupportedOperationException,
+                type.getSimpleName() + " constructor should fail with UnsupportedOperationException"
+        );
     }
 
     @Test
