@@ -31,6 +31,10 @@ class AppIntegrationTest {
     private static String output;
     private static String errors;
 
+    /**
+     * Runs App once before all tests, capturing standard output and error
+     * streams explicitly using UTF-8 encoding.
+     */
     @BeforeAll
     static void runApplication() {
 
@@ -64,13 +68,17 @@ class AppIntegrationTest {
     @Test
     @DisplayName("Nothing is printed to the error output")
     void printsNoErrors() {
-        assertEquals("", errors);
+        // Standard error stream should remain empty during a healthy run
+        assertEquals("", errors, "Expected no error output, but got: " + errors);
     }
 
     @Test
     @DisplayName("The application reports a working database connection")
     void reportsDatabaseConnection() {
-        assertTrue(output.contains("Database connection OK: true"));
+        assertTrue(
+                output.contains("Database connection OK: true"),
+                "Expected output to confirm a working database connection"
+        );
     }
 
     @Test
@@ -79,11 +87,20 @@ class AppIntegrationTest {
 
         List<Report> reports = App.reports();
 
+        // Collect unique report titles to detect duplicates or missing registrations
         Set<String> titles = new HashSet<>();
         reports.forEach(report -> titles.add(report.title()));
 
-        assertEquals(REQUIRED_REPORTS, reports.size());
-        assertEquals(REQUIRED_REPORTS, titles.size());
+        assertEquals(
+                REQUIRED_REPORTS,
+                reports.size(),
+                "Expected " + REQUIRED_REPORTS + " registered reports"
+        );
+        assertEquals(
+                REQUIRED_REPORTS,
+                titles.size(),
+                "Expected " + REQUIRED_REPORTS + " unique report titles"
+        );
     }
 
     @Test
@@ -95,15 +112,24 @@ class AppIntegrationTest {
                 .filter(title -> !output.contains(title))
                 .toList();
 
-        assertEquals(List.of(), missing);
+        assertEquals(
+                List.of(),
+                missing,
+                "Missing report titles in output: " + missing
+        );
     }
 
     @Test
     @DisplayName("Every report prints one table with a record count")
     void everyReportPrintsOneTable() {
 
+        // Count summary lines to verify each report rendered one table
         int tables = output.split("Total records: ", -1).length - 1;
 
-        assertEquals(REQUIRED_REPORTS, tables);
+        assertEquals(
+                REQUIRED_REPORTS,
+                tables,
+                "Expected " + REQUIRED_REPORTS + " report tables in output"
+        );
     }
 }
