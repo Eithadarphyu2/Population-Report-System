@@ -31,10 +31,10 @@ class PopulationReportTest {
                 ResultSet.class.getClassLoader(),
                 new Class<?>[]{ResultSet.class},
                 (proxy, method, args) -> {
-                    if (method.getName().equals("getString")) {
+                    if ("getString".equals(method.getName())) {
                         return (String) values.get((String) args[0]);
                     }
-                    if (method.getName().equals("getLong")) {
+                    if ("getLong".equals(method.getName())) {
                         return (Long) values.get((String) args[0]);
                     }
                     throw new UnsupportedOperationException(method.getName());
