@@ -92,8 +92,8 @@ class DatabaseQueryIntegrationTest {
     }
 
     @Test
-    @DisplayName("A NULL value in the database is mapped as null")
-    void nullValueIsMapped() throws Exception {
+    @DisplayName("A query with a NULL column returns one row for ATA")
+    void nullValueReturnsOneRow() throws Exception {
         // Antarctica ('ATA') has a NULL Capital in the world dataset
         List<Object> capitals = DatabaseQuery.executeQuery(
                 "SELECT Capital FROM country WHERE Code = ?",
@@ -102,14 +102,26 @@ class DatabaseQueryIntegrationTest {
         );
 
         assertEquals(1, capitals.size(), "Expected exactly one row for country code ATA");
-        assertNull(capitals.get(0), "Expected SQL NULL Capital value to map to Java null");
+    }
+
+    @Test
+    @DisplayName("A NULL value in the database is mapped as null")
+    void nullValueIsMappedToNull() throws Exception {
+        // Antarctica ('ATA') has a NULL Capital in the world dataset
+        List<Object> capitals = DatabaseQuery.executeQuery(
+                "SELECT Capital FROM country WHERE Code = ?",
+                rs -> rs.getObject("Capital"),
+                "ATA"
+        );
+
+        assertNull(capitals.getFirst(), "Expected SQL NULL Capital value to map to Java null");
     }
 
     // ----------------------------------------------------------- parameters
 
     @Test
-    @DisplayName("Execute a parameterized SELECT query")
-    void testParameterizedQuery() throws Exception {
+    @DisplayName("A parameterized SELECT query returns the expected row count")
+    void parameterizedQueryReturnsExpectedRowCount() throws Exception {
         // Test combining string and integer bound parameters with ORDER BY and LIMIT
         List<CountryResult> results = DatabaseQuery.executeQuery(
                 SELECT_COUNTRY + "WHERE Continent = ? ORDER BY Population DESC LIMIT ?",
@@ -119,6 +131,18 @@ class DatabaseQueryIntegrationTest {
         );
 
         assertEquals(5, results.size(), "Expected 5 Asian countries in result");
+    }
+
+    @Test
+    @DisplayName("A parameterized SELECT query filters rows by continent")
+    void parameterizedQueryFiltersContinent() throws Exception {
+        // Test combining string and integer bound parameters with ORDER BY and LIMIT
+        List<CountryResult> results = DatabaseQuery.executeQuery(
+                SELECT_COUNTRY + "WHERE Continent = ? ORDER BY Population DESC LIMIT ?",
+                COUNTRY_MAPPER,
+                "Asia",
+                5
+        );
 
         // Verify every returned row matches the bound continent parameter
         for (CountryResult country : results) {
@@ -140,8 +164,8 @@ class DatabaseQueryIntegrationTest {
     }
 
     @Test
-    @DisplayName("A number parameter filters the rows")
-    void numberParameterFiltersRows() throws Exception {
+    @DisplayName("A number parameter returns the expected filtered row count")
+    void numberParameterFiltersMatchingRowCount() throws Exception {
         // Filter countries whose population exceeds 100 million, ordered largest first
         List<CountryResult> results = DatabaseQuery.executeQuery(
                 SELECT_COUNTRY + "WHERE Population > ? ORDER BY Population DESC",
@@ -150,7 +174,19 @@ class DatabaseQueryIntegrationTest {
         );
 
         assertEquals(10, results.size(), "Expected 10 countries with population over 100,000,000");
-        assertEquals("China", results.get(0).name(), "Expected 'China' to be first when ordered by population DESC");
+    }
+
+    @Test
+    @DisplayName("A number parameter preserves SQL ordering on filtered rows")
+    void numberParameterPreservesOrder() throws Exception {
+        // Filter countries whose population exceeds 100 million, ordered largest first
+        List<CountryResult> results = DatabaseQuery.executeQuery(
+                SELECT_COUNTRY + "WHERE Population > ? ORDER BY Population DESC",
+                COUNTRY_MAPPER,
+                100_000_000L
+        );
+
+        assertEquals("China", results.getFirst().name(), "Expected 'China' to be first when ordered by population DESC");
     }
 
     @Test
@@ -180,8 +216,8 @@ class DatabaseQueryIntegrationTest {
     }
 
     @Test
-    @DisplayName("SQL typed into a parameter is treated as plain text")
-    void sqlInParameterIsPlainText() throws Exception {
+    @DisplayName("SQL typed into a parameter returns no rows")
+    void sqlInParameterReturnsNoRows() throws Exception {
         // Ensure SQL-injection-like input is bound safely as a literal string rather than executed as SQL
         List<CountryResult> results = DatabaseQuery.executeQuery(
                 SELECT_COUNTRY + "WHERE Continent = ?",
@@ -190,6 +226,18 @@ class DatabaseQueryIntegrationTest {
         );
 
         assertTrue(results.isEmpty(), "Expected no rows because SQL string in parameter should not inject logic");
+    }
+
+    @Test
+    @DisplayName("SQL typed into a parameter leaves all table rows intact")
+    void sqlInParameterLeavesTableUnchanged() throws Exception {
+        // Ensure SQL-injection-like input does not alter or delete rows in the country table
+        DatabaseQuery.executeQuery(
+                SELECT_COUNTRY + "WHERE Continent = ?",
+                COUNTRY_MAPPER,
+                "Asia' OR '1'='1"
+        );
+
         assertEquals(
                 239,
                 DatabaseQuery.executeQuery(SELECT_COUNTRY, COUNTRY_MAPPER).size(),
