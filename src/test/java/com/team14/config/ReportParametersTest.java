@@ -60,14 +60,16 @@ class ReportParametersTest {
                 ReportParameters.class.getDeclaredConstructor();
         constructor.setAccessible(true);
 
-        InvocationTargetException error = assertThrows(
-                InvocationTargetException.class,
-                constructor::newInstance,
-                "Expected instantiation of ReportParameters to throw InvocationTargetException"
-        );
+        Throwable cause = null;
+        try {
+            constructor.newInstance();
+        } catch (InvocationTargetException error) {
+            cause = error.getCause();
+        }
 
-        assertTrue(
-                error.getCause() instanceof UnsupportedOperationException,
+        org.junit.jupiter.api.Assertions.assertInstanceOf(
+                UnsupportedOperationException.class,
+                cause,
                 "Expected UnsupportedOperationException as the underlying cause"
         );
     }
