@@ -2,6 +2,7 @@ package com.team14.report.language;
 
 import com.team14.report.ReportDisplay.Alignment;
 import com.team14.report.ReportDisplay.Column;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,13 +20,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class LanguagePopulationReportTest {
 
+    // Report instance under test, initialized fresh before each test case
+    private LanguagePopulationReport report;
+
+    @BeforeEach
+    void setUp() {
+        report = new LanguagePopulationReport();
+    }
+
     @Test
     @DisplayName("Language report has the correct title")
     void languageReportHasCorrectTitle() {
-        // Instantiate report and verify its display title
-        LanguagePopulationReport report =
-                new LanguagePopulationReport();
-
+        // Verify the report exposes its expected display title
         assertEquals(
                 "Language Population Report",
                 report.title(),
@@ -34,45 +40,81 @@ class LanguagePopulationReportTest {
     }
 
     @Test
-    @DisplayName("Language report uses the correct SQL clauses")
-    void languageReportUsesCorrectClauses() {
-        // Verify filter, grouping, and ordering clauses in the report SQL
-        LanguagePopulationReport report =
-                new LanguagePopulationReport();
-
-        String clauses = report.clauses();
-
+    @DisplayName("Language report filters using WHERE cl.Language IN")
+    void languageReportHasLanguageInFilter() {
+        // Verify the SQL WHERE clause filters on cl.Language
         assertTrue(
-                clauses.contains("WHERE cl.Language IN"),
+                report.clauses().contains("WHERE cl.Language IN"),
                 "Expected SQL clauses to contain WHERE cl.Language IN filter"
         );
+    }
+
+    @Test
+    @DisplayName("Language report includes Chinese in the language filter")
+    void languageReportFiltersChinese() {
+        // Verify 'Chinese' is included among the filtered languages
         assertTrue(
-                clauses.contains("'Chinese'"),
+                report.clauses().contains("'Chinese'"),
                 "Expected SQL clauses to filter for 'Chinese'"
         );
+    }
+
+    @Test
+    @DisplayName("Language report includes English in the language filter")
+    void languageReportFiltersEnglish() {
+        // Verify 'English' is included among the filtered languages
         assertTrue(
-                clauses.contains("'English'"),
+                report.clauses().contains("'English'"),
                 "Expected SQL clauses to filter for 'English'"
         );
+    }
+
+    @Test
+    @DisplayName("Language report includes Hindi in the language filter")
+    void languageReportFiltersHindi() {
+        // Verify 'Hindi' is included among the filtered languages
         assertTrue(
-                clauses.contains("'Hindi'"),
+                report.clauses().contains("'Hindi'"),
                 "Expected SQL clauses to filter for 'Hindi'"
         );
+    }
+
+    @Test
+    @DisplayName("Language report includes Spanish in the language filter")
+    void languageReportFiltersSpanish() {
+        // Verify 'Spanish' is included among the filtered languages
         assertTrue(
-                clauses.contains("'Spanish'"),
+                report.clauses().contains("'Spanish'"),
                 "Expected SQL clauses to filter for 'Spanish'"
         );
+    }
+
+    @Test
+    @DisplayName("Language report includes Arabic in the language filter")
+    void languageReportFiltersArabic() {
+        // Verify 'Arabic' is included among the filtered languages
         assertTrue(
-                clauses.contains("'Arabic'"),
+                report.clauses().contains("'Arabic'"),
                 "Expected SQL clauses to filter for 'Arabic'"
         );
+    }
 
+    @Test
+    @DisplayName("Language report groups results by cl.Language")
+    void languageReportGroupsByLanguage() {
+        // Verify speaker counts are grouped per language
         assertTrue(
-                clauses.contains("GROUP BY cl.Language"),
+                report.clauses().contains("GROUP BY cl.Language"),
                 "Expected SQL clauses to group by language"
         );
+    }
+
+    @Test
+    @DisplayName("Language report orders results by Speakers descending")
+    void languageReportOrdersBySpeakersDesc() {
+        // Verify results are ordered from highest to lowest speaker count
         assertTrue(
-                clauses.contains("ORDER BY Speakers DESC"),
+                report.clauses().contains("ORDER BY Speakers DESC"),
                 "Expected SQL clauses to order by speakers descending"
         );
     }
@@ -80,11 +122,10 @@ class LanguagePopulationReportTest {
     @Test
     @DisplayName("Language report has the correct column headings")
     void languageReportHasCorrectColumns() {
-        // Check column headings and alignment configuration
-        LanguagePopulationReport report =
-                new LanguagePopulationReport();
-
-        List<Column> columns = report.columns();
+        // Verify column headings match the report specification in order
+        List<String> headings = report.columns().stream()
+                .map(Column::heading)
+                .toList();
 
         assertEquals(
                 List.of(
@@ -92,46 +133,66 @@ class LanguagePopulationReportTest {
                         "Number of Speakers",
                         "Percentage of World Population"
                 ),
-                columns.stream()
-                        .map(Column::heading)
-                        .toList(),
+                headings,
                 "Expected column headings to match language report specification"
         );
+    }
 
+    @Test
+    @DisplayName("Language column is left-aligned")
+    void languageColumnIsLeftAligned() {
+        // Text column should be left-aligned
         assertEquals(
                 Alignment.LEFT,
-                columns.get(0).alignment(),
+                report.columns().get(0).alignment(),
                 "Expected Language column to be left-aligned"
         );
+    }
+
+    @Test
+    @DisplayName("Number of Speakers column is right-aligned")
+    void speakersColumnIsRightAligned() {
+        // Numeric speaker count column should be right-aligned
         assertEquals(
                 Alignment.RIGHT,
-                columns.get(1).alignment(),
+                report.columns().get(1).alignment(),
                 "Expected Number of Speakers column to be right-aligned"
         );
+    }
+
+    @Test
+    @DisplayName("Percentage of World Population column is right-aligned")
+    void percentageColumnIsRightAligned() {
+        // Numeric percentage column should be right-aligned
         assertEquals(
                 Alignment.RIGHT,
-                columns.get(2).alignment(),
+                report.columns().get(2).alignment(),
                 "Expected Percentage of World Population column to be right-aligned"
         );
     }
 
     @Test
     @DisplayName("Language report formats percentage to two decimal places")
-    void languageReportFormatsPercentageCorrectly()
-            throws SQLException {
-
-        LanguagePopulationReport report =
-                new LanguagePopulationReport();
-
-        // Create a dynamic proxy ResultSet returning mock values for a single row
+    void languageReportFormatsPercentageCorrectly() throws SQLException {
+        // Create a dynamic proxy ResultSet returning deterministic mock values for a single row
         ResultSet resultSet = (ResultSet) Proxy.newProxyInstance(
                 ResultSet.class.getClassLoader(),
                 new Class<?>[]{ResultSet.class},
-                (proxy, method, args) -> switch (method.getName()) {
-                    case "getString" -> "English";
-                    case "getLong" -> 123456L;
-                    case "getDouble" -> 12.3456;
-                    default -> null;
+                (proxy, method, args) -> {
+                    String methodName = method.getName();
+                    Object result;
+
+                    if ("getString".equals(methodName)) {
+                        result = "English";
+                    } else if ("getLong".equals(methodName)) {
+                        result = 123456L;
+                    } else if ("getDouble".equals(methodName)) {
+                        result = 12.3456;
+                    } else {
+                        result = "";
+                    }
+
+                    return result;
                 }
         );
 
