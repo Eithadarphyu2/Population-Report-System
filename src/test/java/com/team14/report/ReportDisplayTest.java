@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -107,6 +108,12 @@ class ReportDisplayTest {
                 renderValue(AMOUNT, 1234567L).contains("1,234,567"),
                 "Expected thousands separators in '1,234,567'"
         );
+    }
+
+    @Test
+    @DisplayName("Whole numbers get thousands separators")
+    void fourDigitWholeNumbersUseThousandsSeparators() {
+        // Large and four-digit whole numbers should include comma grouping separators
         assertTrue(
                 renderValue(AMOUNT, 1000).contains("1,000"),
                 "Expected thousands separator in '1,000'"
@@ -131,6 +138,12 @@ class ReportDisplayTest {
                 renderValue(AMOUNT, 1234.5).contains("1,234.50"),
                 "Expected decimal '1234.5' to format as '1,234.50'"
         );
+    }
+
+    @Test
+    @DisplayName("Decimal numbers are shown with two decimal places")
+    void floatDecimalsUseTwoPlaces() {
+        // Floating-point values should be formatted to 2 decimal places
         assertTrue(
                 renderValue(AMOUNT, 2.5f).contains("2.50"),
                 "Expected float '2.5f' to format as '2.50'"
@@ -150,7 +163,7 @@ class ReportDisplayTest {
 
     @Test
     @DisplayName("The title, headings and record count are printed")
-    void titleHeadingsAndCountArePrinted() {
+    void titleIsPrinted() {
 
         String output = render(
                 List.of(NAME, AMOUNT),
@@ -159,8 +172,44 @@ class ReportDisplayTest {
         );
 
         assertTrue(output.contains("Test report"), "Expected report title in output");
+    }
+
+    @Test
+    @DisplayName("The title, headings and record count are printed")
+    void firstHeadingIsPrinted() {
+
+        String output = render(
+                List.of(NAME, AMOUNT),
+                List.of("A", 1),
+                List.of("B", 2)
+        );
+
         assertTrue(output.contains("Name"), "Expected 'Name' column heading in output");
+    }
+
+    @Test
+    @DisplayName("The title, headings and record count are printed")
+    void secondHeadingIsPrinted() {
+
+        String output = render(
+                List.of(NAME, AMOUNT),
+                List.of("A", 1),
+                List.of("B", 2)
+        );
+
         assertTrue(output.contains("Amount"), "Expected 'Amount' column heading in output");
+    }
+
+    @Test
+    @DisplayName("The title, headings and record count are printed")
+    void recordCountIsPrinted() {
+
+        String output = render(
+                List.of(NAME, AMOUNT),
+                List.of("A", 1),
+                List.of("B", 2)
+        );
+
         assertTrue(output.contains("Total records: 2"), "Expected 'Total records: 2' summary line");
     }
 
@@ -195,7 +244,41 @@ class ReportDisplayTest {
         );
 
         assertTrue(line.endsWith(" 1,200 |"), "Expected right-aligned value to end at right cell boundary");
+    }
+
+    @Test
+    @DisplayName("Right-aligned values end at the right of the cell")
+    void rightAlignmentIsNotFlushLeft() {
+
+        String line = lineContaining(
+                render(List.of(AMOUNT), List.of(1200)),
+                "1,200"
+        );
+
         assertFalse(line.startsWith("| 1,200"), "Expected right-aligned value not to sit flush left");
+    }
+
+    @Test
+    @DisplayName("Every table line has the same width, even for long values")
+    void tableLinesAreNotEmpty() {
+
+        String output = render(
+                List.of(NAME, AMOUNT),
+                List.of("A very long name that is wider than the heading", 5),
+                List.of("B", 123456789L)
+        );
+
+        List<Integer> widths = new ArrayList<>();
+
+        // Collect lengths of all table border and row lines
+        for (String line : output.split("\\R")) {
+            if (line.startsWith("|") || line.startsWith("+")) {
+                widths.add(line.length());
+            }
+        }
+
+        // Every rendered table line should have identical character width
+        assertFalse(widths.isEmpty(), "Expected at least one table border or row line");
     }
 
     @Test
@@ -218,7 +301,6 @@ class ReportDisplayTest {
         }
 
         // Every rendered table line should have identical character width
-        assertFalse(widths.isEmpty(), "Expected at least one table border or row line");
         assertTrue(
                 widths.stream().allMatch(w -> w.equals(widths.get(0))),
                 "Expected all table border and row lines to have equal width"
@@ -229,20 +311,35 @@ class ReportDisplayTest {
 
     @Test
     @DisplayName("A null or blank title is rejected")
-    void invalidTitleIsRejected() {
+    void nullTitleIsRejected() {
         List<Column> columns = List.of(NAME);
         List<List<?>> rows = List.of();
 
         assertRejected(() -> ReportDisplay.displayReport(null, columns, rows));
+    }
+
+    @Test
+    @DisplayName("A null or blank title is rejected")
+    void blankTitleIsRejected() {
+        List<Column> columns = List.of(NAME);
+        List<List<?>> rows = List.of();
+
         assertRejected(() -> ReportDisplay.displayReport("  ", columns, rows));
     }
 
     @Test
     @DisplayName("Null or empty columns are rejected")
-    void invalidColumnsAreRejected() {
+    void nullColumnsAreRejected() {
         List<List<?>> rows = List.of();
 
         assertRejected(() -> ReportDisplay.displayReport("T", null, rows));
+    }
+
+    @Test
+    @DisplayName("Null or empty columns are rejected")
+    void emptyColumnsAreRejected() {
+        List<List<?>> rows = List.of();
+
         assertRejected(() -> ReportDisplay.displayReport("T", List.of(), rows));
     }
 
@@ -273,9 +370,19 @@ class ReportDisplayTest {
 
     @Test
     @DisplayName("A column needs a heading and an alignment")
-    void invalidColumnIsRejected() {
+    void nullColumnHeadingIsRejected() {
         assertRejected(() -> new Column(null, Alignment.LEFT));
+    }
+
+    @Test
+    @DisplayName("A column needs a heading and an alignment")
+    void blankColumnHeadingIsRejected() {
         assertRejected(() -> new Column("  ", Alignment.LEFT));
+    }
+
+    @Test
+    @DisplayName("A column needs a heading and an alignment")
+    void nullColumnAlignmentIsRejected() {
         assertRejected(() -> new Column("Name", null));
     }
 
@@ -283,12 +390,28 @@ class ReportDisplayTest {
 
     @Test
     @DisplayName("The standard population column is right-aligned")
-    void populationColumnDefinition() {
+    void populationColumnHeading() {
 
         Column population = Column.population();
 
         assertEquals("Population", population.heading(), "Expected standard population heading to be 'Population'");
+    }
+
+    @Test
+    @DisplayName("The standard population column is right-aligned")
+    void populationColumnAlignment() {
+
+        Column population = Column.population();
+
         assertEquals(Alignment.RIGHT, population.alignment(), "Expected standard population column to be right-aligned");
+    }
+
+    @Test
+    @DisplayName("The standard population column is right-aligned")
+    void populationColumnZeroIsMissing() {
+
+        Column population = Column.population();
+
         assertTrue(population.zeroIsMissing(), "Expected zero population to be treated as missing");
     }
 
@@ -301,14 +424,16 @@ class ReportDisplayTest {
                 ReportDisplay.class.getDeclaredConstructor();
         constructor.setAccessible(true);
 
-        InvocationTargetException error = assertThrows(
-                InvocationTargetException.class,
-                constructor::newInstance,
-                "Expected private constructor call to throw InvocationTargetException"
-        );
+        Throwable cause = null;
+        try {
+            constructor.newInstance();
+        } catch (InvocationTargetException error) {
+            cause = error.getCause();
+        }
 
-        assertTrue(
-                error.getCause() instanceof UnsupportedOperationException,
+        assertInstanceOf(
+                UnsupportedOperationException.class,
+                cause,
                 "Expected UnsupportedOperationException as the underlying cause"
         );
     }
