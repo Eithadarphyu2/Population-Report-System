@@ -14,10 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for the way App runs its reports. Fake reports are used, so
@@ -75,8 +72,8 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("Reports that work are all run and no failure is counted")
-    void runsEveryReport() {
+    @DisplayName("Reports that work produce no failures")
+    void successfulReportsProduceNoFailures() {
 
         FakeReport first = new FakeReport("First", false);
         FakeReport second = new FakeReport("Second", false);
@@ -84,19 +81,60 @@ class AppTest {
         int failures = App.runReports(List.of(first, second));
 
         assertEquals(0, failures, "Expected no failures when all reports succeed");
+    }
+
+    @Test
+    @DisplayName("First working report is run")
+    void firstReportRuns() {
+
+        FakeReport first = new FakeReport("First", false);
+        FakeReport second = new FakeReport("Second", false);
+
+        App.runReports(List.of(first, second));
+
         assertTrue(first.ran, "Expected first report to be executed");
+    }
+
+    @Test
+    @DisplayName("Second working report is run")
+    void secondReportRuns() {
+
+        FakeReport first = new FakeReport("First", false);
+        FakeReport second = new FakeReport("Second", false);
+
+        App.runReports(List.of(first, second));
+
         assertTrue(second.ran, "Expected second report to be executed");
+    }
+
+    @Test
+    @DisplayName("Working reports write nothing to standard error")
+    void successfulReportsPrintNoErrors() {
+
+        FakeReport first = new FakeReport("First", false);
+        FakeReport second = new FakeReport("Second", false);
+
+        App.runReports(List.of(first, second));
+
         // Decode captured bytes using UTF-8 instead of relying on JVM default charset
         assertEquals("", capturedErr.toString(StandardCharsets.UTF_8), "Expected no error output");
     }
 
     @Test
-    @DisplayName("A failing report is counted and its title and reason are printed")
-    void failingReportIsReported() {
+    @DisplayName("A failing report is counted as a failure")
+    void failingReportIsCounted() {
 
         int failures = App.runReports(List.of(new FakeReport("Broken report", true)));
 
         assertEquals(1, failures, "Expected one failure for a single failing report");
+    }
+
+    @Test
+    @DisplayName("A failing report prints its title and reason to standard error")
+    void failingReportPrintsTitleAndReason() {
+
+        App.runReports(List.of(new FakeReport("Broken report", true)));
+
         // Verify the error message in UTF-8 includes both the report title and exception reason
         assertTrue(
                 capturedErr.toString(StandardCharsets.UTF_8)
@@ -106,8 +144,8 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("A failing report does not stop the reports after it")
-    void failingReportDoesNotStopOthers() {
+    @DisplayName("A failing report counts only that report as a failure")
+    void failingReportCountsOnlyFailure() {
 
         FakeReport broken = new FakeReport("Broken", true);
         FakeReport after = new FakeReport("After", false);
@@ -115,6 +153,17 @@ class AppTest {
         int failures = App.runReports(List.of(broken, after));
 
         assertEquals(1, failures, "Expected only the broken report to count as a failure");
+    }
+
+    @Test
+    @DisplayName("A failing report does not stop the report after it from running")
+    void failingReportDoesNotStopSubsequentReport() {
+
+        FakeReport broken = new FakeReport("Broken", true);
+        FakeReport after = new FakeReport("After", false);
+
+        App.runReports(List.of(broken, after));
+
         assertTrue(after.ran, "Expected subsequent report to still run after a failure");
     }
 
@@ -132,9 +181,20 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("No reports means no failures")
-    void noReportsMeansNoFailures() {
-        assertEquals(0, App.runReports(List.of()), "Expected zero failures for an empty report list");
+    @DisplayName("No reports means zero failures")
+    void noReportsMeansZeroFailures() {
+
+        int failures = App.runReports(List.of());
+
+        assertEquals(0, failures, "Expected zero failures for an empty report list");
+    }
+
+    @Test
+    @DisplayName("No reports prints no failure message to standard error")
+    void noReportsPrintsNoFailureMessage() {
+
+        App.runReports(List.of());
+
         // Decode captured bytes using UTF-8 to avoid default-charset warnings and ensure consistency
         assertFalse(
                 capturedErr.toString(StandardCharsets.UTF_8).contains("Report failed"),
@@ -143,21 +203,37 @@ class AppTest {
     }
 
     @Test
-    @DisplayName("App cannot be instantiated")
-    void appCannotBeInstantiated() throws Exception {
+    @DisplayName("App constructor throws InvocationTargetException")
+    void appConstructorThrowsInvocationTargetException() throws Exception {
 
         // Access the private constructor via reflection to test utility-class protection
         Constructor<App> constructor = App.class.getDeclaredConstructor();
         constructor.setAccessible(true);
 
-        InvocationTargetException error = assertThrows(
+        assertThrows(
                 InvocationTargetException.class,
                 constructor::newInstance,
                 "Expected constructor invocation to fail with InvocationTargetException"
         );
+    }
 
-        assertTrue(
-                error.getCause() instanceof UnsupportedOperationException,
+    @Test
+    @DisplayName("App constructor fails with UnsupportedOperationException cause")
+    void appConstructorCauseIsUnsupportedOperationException() throws Exception {
+
+        Constructor<App> constructor = App.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        Throwable cause = null;
+        try {
+            constructor.newInstance();
+        } catch (InvocationTargetException error) {
+            cause = error.getCause();
+        }
+
+        assertInstanceOf(
+                UnsupportedOperationException.class,
+                cause,
                 "Expected UnsupportedOperationException as the underlying cause"
         );
     }
