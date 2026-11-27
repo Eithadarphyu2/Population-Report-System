@@ -35,16 +35,29 @@ class DatabaseConnectionIntegrationTest {
     }
 
     @Test
-    @DisplayName("Verify Database Connection Status and Metadata")
-    void testGetConnection() throws SQLException {
+    @DisplayName("Database connection returned is not null")
+    void connectionIsNotNull() throws SQLException {
 
         try (Connection connection = DatabaseConnection.getConnection()) {
-
             assertNotNull(connection, "Database connection should not be null.");
+        }
+    }
 
+    @Test
+    @DisplayName("Database connection is active and valid")
+    void connectionIsValid() throws SQLException {
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
             // Validate connection responsiveness with a 2-second timeout
             assertTrue(connection.isValid(2), "Database connection should be active.");
+        }
+    }
 
+    @Test
+    @DisplayName("Database product name metadata is readable")
+    void databaseProductNameIsReadable() throws SQLException {
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             assertNotNull(metaData.getDatabaseProductName(), "Database product name should be readable.");
         }
@@ -62,27 +75,49 @@ class DatabaseConnectionIntegrationTest {
     }
 
     @Test
-    @DisplayName("The country and city data can be read through the connection")
-    void worldDataIsReachable() throws SQLException {
+    @DisplayName("Country table has the expected number of rows")
+    void countryTableHasExpectedRowCount() throws SQLException {
 
         try (Connection connection = DatabaseConnection.getConnection()) {
-
-            // Verify standard world dataset row counts
             assertEquals(239, countRows(connection, "country"), "Expected 239 rows in country table");
+        }
+    }
+
+    @Test
+    @DisplayName("City table has the expected number of rows")
+    void cityTableHasExpectedRowCount() throws SQLException {
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
             assertEquals(4079, countRows(connection, "city"), "Expected 4079 rows in city table");
         }
     }
 
     @Test
-    @DisplayName("Each call returns a new, independent connection")
-    void eachCallReturnsNewConnection() throws SQLException {
+    @DisplayName("Each call returns a distinct Connection instance")
+    void eachCallReturnsDistinctConnection() throws SQLException {
 
         try (Connection first = DatabaseConnection.getConnection();
              Connection second = DatabaseConnection.getConnection()) {
 
-            // Ensure two separate Connection instances are returned and both are valid
+            // Ensure two separate Connection instances are returned
             assertNotSame(first, second, "Expected each call to return a distinct Connection instance");
+        }
+    }
+
+    @Test
+    @DisplayName("First returned connection is active and valid")
+    void firstConnectionIsValid() throws SQLException {
+
+        try (Connection first = DatabaseConnection.getConnection()) {
             assertTrue(first.isValid(2), "First connection should be active");
+        }
+    }
+
+    @Test
+    @DisplayName("Second returned connection is active and valid")
+    void secondConnectionIsValid() throws SQLException {
+
+        try (Connection second = DatabaseConnection.getConnection()) {
             assertTrue(second.isValid(2), "Second connection should be active");
         }
     }
