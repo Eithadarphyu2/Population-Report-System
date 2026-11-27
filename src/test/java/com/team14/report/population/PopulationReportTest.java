@@ -433,51 +433,91 @@ class PopulationReportTest {
         }
 
         @Test
-        @DisplayName("Everyone living in cities")
-        void everyoneInCities() throws SQLException {
+        @DisplayName("Everyone living in cities shows 100.00% city population")
+        void everyoneInCitiesShowsFullCityPercentage() throws SQLException {
+            // When the entire population lives in cities, the city column is 100.00%
             List<?> row = readRow(500, 500);
             assertEquals("500 (100.00%)", row.get(2),
                     "City population should be 100.00% when everyone lives in cities");
+        }
+
+        @Test
+        @DisplayName("Everyone living in cities shows 0.00% non-city population")
+        void everyoneInCitiesShowsZeroNonCityPercentage() throws SQLException {
+            // When the entire population lives in cities, no population remains outside cities
+            List<?> row = readRow(500, 500);
             assertEquals("0 (0.00%)", row.get(3),
                     "Non-city population should be 0.00% when everyone lives in cities");
         }
 
         @Test
-        @DisplayName("Nobody living in cities")
-        void nobodyInCities() throws SQLException {
+        @DisplayName("Nobody living in cities shows 0.00% city population")
+        void nobodyInCitiesShowsZeroCityPercentage() throws SQLException {
+            // When city population is zero, the city column formats as 0 (0.00%)
             List<?> row = readRow(500, 0);
             assertEquals("0 (0.00%)", row.get(2),
                     "City population should be 0.00% when nobody lives in cities");
+        }
+
+        @Test
+        @DisplayName("Nobody living in cities shows 100.00% non-city population")
+        void nobodyInCitiesShowsFullNonCityPercentage() throws SQLException {
+            // When city population is zero, all population is outside cities (100.00%)
+            List<?> row = readRow(500, 0);
             assertEquals("500 (100.00%)", row.get(3),
                     "Non-city population should be 100.00% when nobody lives in cities");
         }
 
         @Test
-        @DisplayName("Large population values use thousands separators")
-        void thousandsSeparators() throws SQLException {
+        @DisplayName("Large city population values use thousands separators")
+        void thousandsSeparatorsInCityPopulation() throws SQLException {
+            // Verify thousands formatting on the city population column
             List<?> row = readRow(1_000_000, 250_000);
             assertEquals("250,000 (25.00%)", row.get(2),
                     "Large city population should include thousands separators");
+        }
+
+        @Test
+        @DisplayName("Large non-city population values use thousands separators")
+        void thousandsSeparatorsInNonCityPopulation() throws SQLException {
+            // Verify thousands formatting on the non-city population column
+            List<?> row = readRow(1_000_000, 250_000);
             assertEquals("750,000 (75.00%)", row.get(3),
                     "Large non-city population should include thousands separators");
         }
 
         @Test
-        @DisplayName("Percentages are rounded to two decimal places")
-        void percentageRounding() throws SQLException {
+        @DisplayName("City percentage is rounded to two decimal places")
+        void cityPercentageRounding() throws SQLException {
+            // 1 out of 3 is 33.333...%, which should round to 33.33%
             List<?> row = readRow(3, 1);
             assertEquals("1 (33.33%)", row.get(2),
                     "City percentage should be rounded to two decimal places");
+        }
+
+        @Test
+        @DisplayName("Non-city percentage is rounded to two decimal places")
+        void nonCityPercentageRounding() throws SQLException {
+            // 2 out of 3 is 66.666...%, which should round to 66.67%
+            List<?> row = readRow(3, 1);
             assertEquals("2 (66.67%)", row.get(3),
                     "Non-city percentage should be rounded to two decimal places");
         }
 
         @Test
-        @DisplayName("City and non-city populations add up to the total")
-        void populationPartsAddUp() throws SQLException {
+        @DisplayName("City population part matches expected formatted value")
+        void cityPopulationPartMatchesExpected() throws SQLException {
+            // Verify formatted city population and percentage for a mixed population
             List<?> row = readRow(7_654_321, 2_345_678);
             assertEquals("2,345,678 (30.65%)", row.get(2),
                     "City population and percentage should match expected values");
+        }
+
+        @Test
+        @DisplayName("Non-city population equals total minus city population")
+        void nonCityPopulationEqualsRemainder() throws SQLException {
+            // 7,654,321 - 2,345,678 = 5,308,643 (69.35%)
+            List<?> row = readRow(7_654_321, 2_345_678);
             assertEquals("5,308,643 (69.35%)", row.get(3),
                     "Non-city population should equal total minus city population");
         }

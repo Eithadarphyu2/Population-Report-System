@@ -45,10 +45,12 @@ class CountryReportTest {
     private final ByteArrayOutputStream captured = new ByteArrayOutputStream();
 
     /**
-     * Redirects System.out to a UTF-8 PrintStream with auto-flush before each test.
+     * Redirects System.out to a UTF-8 PrintStream with auto-flush and resets
+     * the capture buffer before each test.
      */
     @BeforeEach
     void captureOutput() {
+        captured.reset();
         System.setOut(new PrintStream(captured, true, StandardCharsets.UTF_8));
     }
 
@@ -129,11 +131,17 @@ class CountryReportTest {
     }
 
     @Test
-    @DisplayName("Countries in a continent: a null or blank continent is rejected")
-    void countriesByContinentRejectsBlank() {
-        // Reject null and whitespace-only continent inputs
+    @DisplayName("Countries in a continent: a null continent is rejected")
+    void countriesByContinentRejectsNull() {
+        // Null continent input should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new CountriesByContinentReport((String) null));
+    }
+
+    @Test
+    @DisplayName("Countries in a continent: a blank continent is rejected")
+    void countriesByContinentRejectsBlank() {
+        // Whitespace-only continent input should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new CountriesByContinentReport("   "));
     }
@@ -183,11 +191,17 @@ class CountryReportTest {
     }
 
     @Test
-    @DisplayName("Countries in a region: a null or blank region is rejected")
-    void countriesByRegionRejectsBlank() {
-        // Reject null and empty region names
+    @DisplayName("Countries in a region: a null region is rejected")
+    void countriesByRegionRejectsNull() {
+        // Null region name should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new CountriesByRegionReport((String) null));
+    }
+
+    @Test
+    @DisplayName("Countries in a region: an empty region is rejected")
+    void countriesByRegionRejectsEmpty() {
+        // Empty region name should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new CountriesByRegionReport(""));
     }
@@ -226,11 +240,17 @@ class CountryReportTest {
     }
 
     @Test
-    @DisplayName("Top N countries worldwide: N must be greater than 0")
-    void topCountriesWorldwideRejectsBadN() {
-        // N must be positive; zero or negative values should be rejected
+    @DisplayName("Top N countries worldwide: N must not be zero")
+    void topCountriesWorldwideRejectsZero() {
+        // Zero limit is invalid and should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new TopCountriesWorldwideReport(0));
+    }
+
+    @Test
+    @DisplayName("Top N countries worldwide: N must not be negative")
+    void topCountriesWorldwideRejectsNegative() {
+        // Negative limit is invalid and should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new TopCountriesWorldwideReport(-4));
     }
@@ -280,11 +300,17 @@ class CountryReportTest {
     }
 
     @Test
-    @DisplayName("Top N countries in a continent: a blank continent or a bad N is rejected")
-    void topCountriesByContinentRejectsBadValues() {
-        // Reject blank continent or non-positive limit N
+    @DisplayName("Top N countries in a continent: a blank continent is rejected")
+    void topCountriesByContinentRejectsBlankContinent() {
+        // Blank continent name should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new TopCountriesByContinentReport("  ", 5));
+    }
+
+    @Test
+    @DisplayName("Top N countries in a continent: a zero limit N is rejected")
+    void topCountriesByContinentRejectsZeroN() {
+        // Non-positive limit N should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new TopCountriesByContinentReport("Asia", 0));
     }
@@ -335,11 +361,17 @@ class CountryReportTest {
     }
 
     @Test
-    @DisplayName("Top N countries in a region: a blank region or a bad N is rejected")
-    void topCountriesByRegionRejectsBadValues() {
-        // Reject empty region or negative limit N
+    @DisplayName("Top N countries in a region: an empty region is rejected")
+    void topCountriesByRegionRejectsEmptyRegion() {
+        // Empty region name should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new TopCountriesByRegionReport("", 5));
+    }
+
+    @Test
+    @DisplayName("Top N countries in a region: a negative limit N is rejected")
+    void topCountriesByRegionRejectsNegativeN() {
+        // Negative limit N should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class,
                 () -> new TopCountriesByRegionReport("Caribbean", -1));
     }
@@ -367,9 +399,9 @@ class CountryReportTest {
     // ------------------------------------------- shared CountryReport code
 
     @Test
-    @DisplayName("Country reports show the columns the coursework requires")
-    void countryColumns() {
-        // Retrieve column definitions and check headings, alignment, and zero-as-missing flag
+    @DisplayName("Country reports show the six required column headings")
+    void countryColumnHeadings() {
+        // Verify column headings match coursework specification in order
         List<Column> columns = ReportDefinition.columns(new AllCountriesInWorldReport());
 
         assertEquals(
@@ -377,26 +409,79 @@ class CountryReportTest {
                 columns.stream().map(Column::heading).toList(),
                 "Country report headings do not match coursework specification"
         );
-        assertEquals(Alignment.RIGHT, columns.get(4).alignment(),
-                "Population column (index 4) should be right-aligned");
-        assertTrue(columns.get(4).zeroIsMissing(),
-                "Population column (index 4) should treat zero as missing");
     }
 
     @Test
-    @DisplayName("Country reports select from country and join the capital city")
-    void countrySelect() {
-        // Verify SELECT clause, capital city LEFT JOIN, and FROM country table
+    @DisplayName("Country report population column is right-aligned")
+    void countryPopulationColumnAlignment() {
+        // Population column (index 4) should be right-aligned for numeric display
+        List<Column> columns = ReportDefinition.columns(new AllCountriesInWorldReport());
+
+        assertEquals(
+                Alignment.RIGHT,
+                columns.get(4).alignment(),
+                "Population column (index 4) should be right-aligned"
+        );
+    }
+
+    @Test
+    @DisplayName("Country report population column treats zero as missing")
+    void countryPopulationColumnZeroIsMissing() {
+        // Population column (index 4) should treat zero population as missing
+        List<Column> columns = ReportDefinition.columns(new AllCountriesInWorldReport());
+
+        assertTrue(
+                columns.get(4).zeroIsMissing(),
+                "Population column (index 4) should treat zero as missing"
+        );
+    }
+
+    @Test
+    @DisplayName("Country reports start SELECT with Code, Name, Continent, and Region")
+    void countrySelectStartsWithCountryColumns() {
+        // Verify SELECT prefix includes the required country columns
         String select = ReportDefinition.select(new AllCountriesInWorldReport());
 
-        assertTrue(select.startsWith("SELECT c.Code, c.Name, c.Continent, c.Region,"),
-                "Expected SELECT clause to start with Code, Name, Continent, and Region");
-        assertTrue(select.contains("c.Population, ci.Name AS Capital"),
-                "Expected SELECT clause to include Population and Capital alias");
-        assertTrue(select.contains("FROM country c"),
-                "Expected SELECT clause to query FROM country c");
-        assertTrue(select.contains("LEFT JOIN city ci ON c.Capital = ci.ID"),
-                "Expected SELECT clause to left-join city table on capital ID");
+        assertTrue(
+                select.startsWith("SELECT c.Code, c.Name, c.Continent, c.Region,"),
+                "Expected SELECT clause to start with Code, Name, Continent, and Region"
+        );
+    }
+
+    @Test
+    @DisplayName("Country reports select Population and aliased Capital")
+    void countrySelectIncludesPopulationAndCapital() {
+        // Verify SELECT clause projects c.Population and ci.Name AS Capital
+        String select = ReportDefinition.select(new AllCountriesInWorldReport());
+
+        assertTrue(
+                select.contains("c.Population, ci.Name AS Capital"),
+                "Expected SELECT clause to include Population and Capital alias"
+        );
+    }
+
+    @Test
+    @DisplayName("Country reports query FROM country c")
+    void countrySelectFromCountryTable() {
+        // Verify primary source table alias in SELECT SQL
+        String select = ReportDefinition.select(new AllCountriesInWorldReport());
+
+        assertTrue(
+                select.contains("FROM country c"),
+                "Expected SELECT clause to query FROM country c"
+        );
+    }
+
+    @Test
+    @DisplayName("Country reports left-join city table on capital ID")
+    void countrySelectLeftJoinsCapitalCity() {
+        // Verify LEFT JOIN preserves countries that do not have a capital city
+        String select = ReportDefinition.select(new AllCountriesInWorldReport());
+
+        assertTrue(
+                select.contains("LEFT JOIN city ci ON c.Capital = ci.ID"),
+                "Expected SELECT clause to left-join city table on capital ID"
+        );
     }
 
     @Test
@@ -417,7 +502,7 @@ class CountryReportTest {
     }
 
     @Test
-    @DisplayName("A country with no capital is read with an empty capital")
+    @DisplayName("A country with no capital is read with a null capital")
     void readsCountryWithoutCapital() throws SQLException {
         // Antarctica has population 0 and no capital city (null)
         ResultSet row = FakeResultSet.row(

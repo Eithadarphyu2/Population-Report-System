@@ -1,6 +1,7 @@
 package com.team14.report.language;
 
 import com.team14.report.ReportOutput;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class LanguagePopulationReportIntegrationTest {
 
+    // Expected number of rows in the language population report
+    private static final int EXPECTED_RECORD_COUNT = 5;
+
     // Five target languages expected in the language population report
     private static final Set<String> EXPECTED_LANGUAGES = Set.of(
             "Chinese",
@@ -27,32 +31,42 @@ class LanguagePopulationReportIntegrationTest {
             "Arabic"
     );
 
-    // Runs the language report and captures its formatted output
-    private static ReportOutput run(LanguagePopulationReport report)
-            throws SQLException {
-        return ReportOutput.capture(report);
+    // Captured report output shared across read-only integration assertions
+    private static ReportOutput output;
+
+    // Executes the language report once against the database before running tests
+    @BeforeAll
+    static void setUpReportOutput() throws SQLException {
+        output = ReportOutput.capture(new LanguagePopulationReport());
     }
 
     @Test
-    @DisplayName("Language report lists all five specified languages")
-    void languageReportListsFiveLanguages() throws SQLException {
-        // Execute report and inspect title, row count, and language set
-        ReportOutput output = run(new LanguagePopulationReport());
-
+    @DisplayName("Language report output has the expected title")
+    void languageReportHasExpectedTitle() {
+        // Confirm the rendered report title matches the specification
         assertEquals(
                 "Language Population Report",
                 output.title(),
                 "Expected report title to be 'Language Population Report'"
         );
+    }
 
+    @Test
+    @DisplayName("Language report lists five total records")
+    void languageReportListsFiveRecords() {
+        // Confirm total record count matches the five tracked languages
         assertEquals(
-                5,
+                EXPECTED_RECORD_COUNT,
                 output.totalRecords(),
                 "Expected report to contain exactly 5 language records"
         );
+    }
 
-        Set<String> actualLanguages =
-                new HashSet<>(output.column("Language"));
+    @Test
+    @DisplayName("Language report lists all five specified languages")
+    void languageReportListsFiveLanguages() {
+        // Collect rendered language names and verify exact set match
+        Set<String> actualLanguages = new HashSet<>(output.column("Language"));
 
         assertEquals(
                 EXPECTED_LANGUAGES,
@@ -62,33 +76,41 @@ class LanguagePopulationReportIntegrationTest {
     }
 
     @Test
-    @DisplayName("Language report orders languages by speakers, largest first")
-    void languageReportOrdersLanguagesBySpeakers()
-            throws SQLException {
-        // Fetch speaker counts and verify descending order
-        ReportOutput output = run(new LanguagePopulationReport());
-
-        List<String> speakers =
-                output.column("Number of Speakers");
+    @DisplayName("Language report returns five speaker count rows")
+    void languageReportReturnsFiveSpeakerCounts() {
+        // Confirm every report row includes a formatted speaker count
+        List<String> speakers = output.column("Number of Speakers");
 
         assertEquals(
-                5,
+                EXPECTED_RECORD_COUNT,
                 speakers.size(),
                 "Expected 5 speaker count entries in the report"
         );
+    }
 
-        // Compare each adjacent pair so earlier rows have >= speakers than later rows
+    @Test
+    @DisplayName("Language report orders languages by speakers, largest first")
+    void languageReportOrdersLanguagesBySpeakers() {
+        // Verify adjacent rows are ordered from highest to lowest speaker count
+        List<String> speakers = output.column("Number of Speakers");
+
+        assertTrue(
+                hasDescendingSpeakerCounts(speakers),
+                "Languages must be ordered from largest to smallest number of speakers"
+        );
+    }
+
+    // Returns true when every adjacent speaker count pair is in non-increasing order
+    private static boolean hasDescendingSpeakerCounts(List<String> speakers) {
         for (int i = 0; i < speakers.size() - 1; i++) {
-
             long current = parsePopulation(speakers.get(i));
             long next = parsePopulation(speakers.get(i + 1));
 
-            assertTrue(
-                    current >= next,
-                    "Languages must be ordered from largest "
-                            + "to smallest number of speakers"
-            );
+            if (current < next) {
+                return false;
+            }
         }
+        return true;
     }
 
     // Strips thousands commas and parses speaker count as a long
