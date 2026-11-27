@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -82,20 +83,24 @@ class AppIntegrationTest {
     }
 
     @Test
-    @DisplayName("All 32 reports are registered, each with its own title")
+    @DisplayName("All 32 reports are registered")
     void allReportsAreRegistered() {
-
         List<Report> reports = App.reports();
-
-        // Collect unique report titles to detect duplicates or missing registrations
-        Set<String> titles = new HashSet<>();
-        reports.forEach(report -> titles.add(report.title()));
 
         assertEquals(
                 REQUIRED_REPORTS,
                 reports.size(),
                 "Expected " + REQUIRED_REPORTS + " registered reports"
         );
+    }
+
+    @Test
+    @DisplayName("Every registered report has a unique title")
+    void registeredReportsHaveUniqueTitles() {
+        Set<String> titles = App.reports().stream()
+                .map(Report::title)
+                .collect(Collectors.toSet());
+
         assertEquals(
                 REQUIRED_REPORTS,
                 titles.size(),
